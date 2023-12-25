@@ -141,9 +141,3 @@ impl Board {
         todo!();
     }
 }
-fn get_possible_move_square_indexes(piece: Piece, piece_square_index: u8) {
-    match piece {
-        
-    }
-    todo!();
-}
