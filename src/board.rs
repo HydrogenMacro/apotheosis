@@ -121,12 +121,16 @@ impl Board {
         return board;
     }
     pub fn get_valid_moves(&self) -> &[u8] {
-        for i in 1..=2 {
-            println!("{:?}", Black);
+        let mut valid_moves = Vec::with_capacity(36);
+        for i in 0..64 {
+            let piece = self.data[i];
+            
+            //check all possible
+            //add only if valid
         }
         todo!();
     }
-    pub fn check_move(&self) -> bool {
+    pub fn move_is_valid(&self, from_square_index; u8, to_square_index: u8) -> bool {
         
         todo!();
     }
@@ -136,4 +140,10 @@ impl Board {
     pub fn print(&self) {
         todo!();
     }
+}
+fn get_possible_move_square_indexes(piece: Piece, piece_square_index: u8) {
+    match piece {
+        
+    }
+    todo!();
 }
