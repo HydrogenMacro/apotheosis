@@ -1,4 +1,4 @@
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Piece {
     Pawn,
     Knight,
@@ -13,7 +13,7 @@ pub enum BoardSquare {
     #[default]
     Blank
 }
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Color {
     Black,
     White
