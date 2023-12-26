@@ -138,6 +138,22 @@ impl Board {
         todo!();
     }
     pub fn print(&self) {
-        todo!();
+        let mut board_render = String::new();
+        for i in 0..64 {
+            let board_space = self.data[i];
+            if let BoardSquare::Occupied(color, piece) = board_space {
+                let piece_as_char = match piece {
+                    Pawn => if color == White { 'P' } else { 'p' },
+                    Knight => if color == White { 'N' } else { 'n' },
+                    Bishop => if color == White { 'B' } else { 'b' },
+                    Rook => if color == White { 'R' } else { 'r' },
+                    Queen => if color == White { 'Q' } else { 'q' },
+                    King => if color == White { 'K' } else { 'k' }
+                };
+                board_render.push(piece_as_char);
+            }
+            if i % 8 == 7 { board_render.push('\n') }
+        }
+        println!("{}", board_render);
     }
 }
