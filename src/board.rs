@@ -132,15 +132,18 @@ impl Board {
                     Pawn => {
                         
                     },
-                    Knight => {
-                        let deltas = [10, 17, 15, 6, -10, -17, -15, -6];
+                    Knight | King => {
+                        let deltas = match target_piece_type {
+                            Knight => [10, 17, 15, 6, -10, -17, -15, -6],
+                            King => [-9, -8, -7, -1, 1, 7, 8, 9]
+                        };
                         for delta in deltas.iter() {
                             let reachable_square_index = target_piece_square_index + delta;
                             if reachable_square_index < 0 || reachable_square_index > 64 {
                                 break;
                             }
-                            if ((dir % 8) - (reachable_square_index % 8)).abs() == 7 {
-                                // TODO: find modulo pattern for knight
+                            if ((dir % 8) - (reachable_square_index % 8)).abs() >= 7 {
+                                // please be correct condition
                                 break;
                             }
                             let reachable_square = self.data[reachable_square_index];
@@ -180,9 +183,6 @@ impl Board {
                                 }
                             }
                         }
-                    },
-                    King => {
-                        
                     }
                 }
             }
