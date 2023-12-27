@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Piece {
     Pawn,
@@ -27,7 +29,7 @@ pub struct Board {
     castle_availibility: [[bool; 2]; 2],
     halfmove_clock: u8,
     en_passant_target_square: Option<u8>,
-    move_num: u64
+    move_num: u64,
 }
 impl Default for Board {
     fn default() -> Board {
@@ -134,35 +136,67 @@ impl Board {
                         
                     },
                     Bishop => {
-                        let mut should_continue_check = (true, true, true, true);
                         for base_delta in 1..=8 {
-                            // northwest check
-                            const nw_delta = base_delta * -7;
-                            let nw_possible_move_square_index = nw_delta + target_piece_square_index; //TODO: rename variables
-                            if should_continue_check.0 {
-                                if possible_move_square_index > 0 && possible_move_square_index < 64 {
-                                    if let BoardSquare::Occupied(piece_to_check_color, piece_to_check_type) = self.data[possible_move_square_index] {
-                                        if piece_to_check_color != target_piece_color { 
-                                            // can capture, yields extra move
-                                            valid_moves.push((target_piece_square_index, possible_move_square_index));
-                                        }
-                                        should_continue_check.0 = false;
-                                    } else { // board square is empty
-                                        valid_moves.push((target_piece_square_index, possible_move_square_index));
-                                    }
-                                } else { // possible move square is outside bounds
-                                    should_continue_check.0 = false;
+                            const directions = [base_delta * -7, base_delta * -9, base_delta * 7, base_delta * 9];
+                            for dir in directions.iter() {
+                                let delta = base_delta * dir;
+                                let reachable_square_index = target_piece_square_index + delta;
+                                if reachable_square_index < 0 || reachable_square_index > 64 {
+                                    break;
                                 }
-                            }; // end nw
-                            
-                            
+                                let reachable_square = self.data[reachable_square_index];
+                                if let BoardSquare::Occupied(piece_in_range_color, piece_in_range_type) = reachable_square {
+                                    if piece_in_range_color != target_piece_color { // if piece in range is capturable
+                                        valid_moves.push((target_piece_square_index, reachable_square_index));
+                                    }
+                                    break;
+                                } else {
+                                    valid_moves.push((target_piece_square_index, reachable_square_index));
+                                }
+                            }
                         }
                     },
                     Rook => {
-                        
+                        for base_delta in 1..=8 {
+                            const directions = [base_delta * -8, base_delta * -1, base_delta * 8, base_delta * 1];
+                            for dir in directions.iter() {
+                                let delta = base_delta * dir;
+                                let reachable_square_index = target_piece_square_index + delta;
+                                if reachable_square_index < 0 || reachable_square_index > 64 {
+                                    break;
+                                }
+                                let reachable_square = self.data[reachable_square_index];
+                                if let BoardSquare::Occupied(piece_in_range_color, piece_in_range_type) = reachable_square {
+                                    if piece_in_range_color != target_piece_color { // if piece in range is capturable
+                                        valid_moves.push((target_piece_square_index, reachable_square_index));
+                                    }
+                                    break;
+                                } else {
+                                    valid_moves.push((target_piece_square_index, reachable_square_index));
+                                }
+                            }
+                        }
                     },
                     Queen => {
-                        
+                        for base_delta in 1..=8 {
+                            const directions = [base.delta * -1, base_delta * -7, base.delta * -8, base_delta * -9, base.delta * 1, base_delta * 7, base.delta * 8, base_delta * 9];
+                            for dir in directions.iter() {
+                                let delta = base_delta * dir;
+                                let reachable_square_index = target_piece_square_index + delta;
+                                if reachable_square_index < 0 || reachable_square_index > 64 {
+                                    break;
+                                }
+                                let reachable_square = self.data[reachable_square_index];
+                                if let BoardSquare::Occupied(piece_in_range_color, piece_in_range_type) = reachable_square {
+                                    if piece_in_range_color != target_piece_color { // if piece in range is capturable
+                                        valid_moves.push((target_piece_square_index, reachable_square_index));
+                                    }
+                                    break;
+                                } else {
+                                    valid_moves.push((target_piece_square_index, reachable_square_index));
+                                }
+                            }
+                        }
                     },
                     King => {
                         
@@ -172,11 +206,7 @@ impl Board {
         }
         todo!();
     }
-    pub fn move_is_valid(&self, from_square_index: u8, to_square_index: u8) -> bool {
-        
-        todo!();
-    }
-    pub fn get_piece_at(&self) -> Piece {
+    pub fn generate_board_from_piece_move(&self) {
         todo!();
     }
     pub fn print(&self) {
