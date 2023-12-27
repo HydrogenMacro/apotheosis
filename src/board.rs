@@ -130,7 +130,37 @@ impl Board {
             if let BoardSquare::Occupied(target_piece_color, target_piece_type) = target_piece {
                 match target_piece_type {
                     Pawn => {
-                        
+                        let direction = if target_piece_color == White { -1 } else { 1 };
+                        let reachable_square_index = target_piece_square_index + (direction * 8);
+                        if reachable_square_index >= 0 && reachable_square_index < 64 {
+                            if self.data[reachable_square_index] == BoardSquare::Blank {
+                                valid_moves.push((target_piece_square_index, reachable_square_index));
+                            }
+                        }
+                        let is_on_starting_square = match target_piece_color {
+                            White => target_piece_square_index >= 48 && target_piece_square_index < 56,
+                            Black => target_piece_square_index >= 8  && target_piece_square_index < 16
+                        };
+                        if is_on_starting_square {
+                            let extended_reachable_square_index = target_piece_square_index + (direction * 16);
+                            if extended_reachable_square_index >= 0 && extended_reachable_square_index < 64 {
+                                if self.data[extended_reachable_square_index] == BoardSquare::Blank {
+                                    valid_moves.push((target_piece_square_index, reachable_square_index));
+                                }
+                            }
+                        }
+                        let capture_deltas = [7, 9];
+                        for capture_delta in capture_deltas.iter() {
+                            let capturable_square_index = target_piece_square_index + (capture_delta * direction);
+                            if capturable_square_index < 0 || capturable_square_index >= 64 {
+                                break;
+                            }
+                            if let BoardSquare::Occupied(capturable_piece_color, capturable_piece_type) = self.data[capturable_square_index] {
+                                if capturable_piece_color != target_piece_color {
+                                    valid_moves.push((target_piece_square_index, capturable_square_index));
+                                }
+                            }
+                        }
                     },
                     Knight | King => {
                         let deltas = match target_piece_type {
@@ -139,7 +169,7 @@ impl Board {
                         };
                         for delta in deltas.iter() {
                             let reachable_square_index = target_piece_square_index + delta;
-                            if reachable_square_index < 0 || reachable_square_index > 64 {
+                            if reachable_square_index < 0 || reachable_square_index >= 64 {
                                 break;
                             }
                             if ((dir % 8) - (reachable_square_index % 8)).abs() >= 7 {
@@ -165,7 +195,7 @@ impl Board {
                             for dir in directions.iter() {
                                 let delta = base_delta * dir;
                                 let reachable_square_index = target_piece_square_index + delta;
-                                if reachable_square_index < 0 || reachable_square_index > 64 {
+                                if reachable_square_index < 0 || reachable_square_index >= 64 {
                                     break;
                                 }
                                 if ((dir % 8) - (reachable_square_index % 8)).abs() == 7 {
