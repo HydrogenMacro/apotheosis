@@ -133,57 +133,40 @@ impl Board {
                         
                     },
                     Knight => {
-                        
-                    },
-                    Bishop => {
-                        for base_delta in 1..=8 {
-                            const directions = [base_delta * -7, base_delta * -9, base_delta * 7, base_delta * 9];
-                            for dir in directions.iter() {
-                                let delta = base_delta * dir;
-                                let reachable_square_index = target_piece_square_index + delta;
-                                if reachable_square_index < 0 || reachable_square_index > 64 {
+                        let deltas = [10, 17, 15, 6, -10, -17, -15, -6];
+                        for delta in deltas.iter() {
+                            let reachable_square_index = target_piece_square_index + delta;
+                            if reachable_square_index < 0 || reachable_square_index > 64 {
+                                break;
+                            }
+                            if ((dir % 8) - (reachable_square_index % 8)).abs() == 7 {
+                                // TODO: find modulo pattern for knight
+                                break;
+                            }
+                            let reachable_square = self.data[reachable_square_index];
+                            if let BoardSquare::Occupied(piece_in_range_color, piece_in_range_type) = reachable_square {
+                                if piece_in_range_color == target_piece_color {
                                     break;
-                                }
-                                let reachable_square = self.data[reachable_square_index];
-                                if let BoardSquare::Occupied(piece_in_range_color, piece_in_range_type) = reachable_square {
-                                    if piece_in_range_color != target_piece_color { // if piece in range is capturable
-                                        valid_moves.push((target_piece_square_index, reachable_square_index));
-                                    }
-                                    break;
-                                } else {
-                                    valid_moves.push((target_piece_square_index, reachable_square_index));
                                 }
                             }
+                            valid_moves.push((target_piece_square_index, reachable_square_index));
                         }
                     },
-                    Rook => {
+                    Bishop | Rook | Queen => {
+                        let directions = match target_piece_type {
+                            Bishop => [-7, -9, 7, 9],
+                            Rook => [-1, -8, 1, 8],
+                            Queen => [-1, -7, -8, -9, 1, 7, 8, 9]
+                        };
                         for base_delta in 1..=8 {
-                            const directions = [base_delta * -8, base_delta * -1, base_delta * 8, base_delta * 1];
                             for dir in directions.iter() {
                                 let delta = base_delta * dir;
                                 let reachable_square_index = target_piece_square_index + delta;
                                 if reachable_square_index < 0 || reachable_square_index > 64 {
                                     break;
                                 }
-                                let reachable_square = self.data[reachable_square_index];
-                                if let BoardSquare::Occupied(piece_in_range_color, piece_in_range_type) = reachable_square {
-                                    if piece_in_range_color != target_piece_color { // if piece in range is capturable
-                                        valid_moves.push((target_piece_square_index, reachable_square_index));
-                                    }
-                                    break;
-                                } else {
-                                    valid_moves.push((target_piece_square_index, reachable_square_index));
-                                }
-                            }
-                        }
-                    },
-                    Queen => {
-                        for base_delta in 1..=8 {
-                            const directions = [base.delta * -1, base_delta * -7, base.delta * -8, base_delta * -9, base.delta * 1, base_delta * 7, base.delta * 8, base_delta * 9];
-                            for dir in directions.iter() {
-                                let delta = base_delta * dir;
-                                let reachable_square_index = target_piece_square_index + delta;
-                                if reachable_square_index < 0 || reachable_square_index > 64 {
+                                if ((dir % 8) - (reachable_square_index % 8)).abs() == 7 {
+                                    // yes
                                     break;
                                 }
                                 let reachable_square = self.data[reachable_square_index];
