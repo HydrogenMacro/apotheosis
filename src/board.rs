@@ -121,9 +121,54 @@ impl Board {
         return board;
     }
     pub fn get_valid_moves(&self) -> &[(u8, u8)] {
+        // sorry in advance for the code here
         let mut valid_moves: Vec<(u8, u8)> = Vec::with_capacity(36);
-        for i in 0..64 {
-            let piece = self.data[i];
+        for target_piece_square_index in 0..64 {
+            let target_piece = self.data[target_piece_square_index];
+            if let BoardSquare::Occupied(target_piece_color, target_piece_type) = target_piece {
+                match target_piece_type {
+                    Pawn => {
+                        
+                    },
+                    Knight => {
+                        
+                    },
+                    Bishop => {
+                        let mut should_continue_check = (true, true, true, true);
+                        for base_delta in 1..=8 {
+                            // northwest check
+                            const nw_delta = base_delta * -7;
+                            let nw_possible_move_square_index = nw_delta + target_piece_square_index; //TODO: rename variables
+                            if should_continue_check.0 {
+                                if possible_move_square_index > 0 && possible_move_square_index < 64 {
+                                    if let BoardSquare::Occupied(piece_to_check_color, piece_to_check_type) = self.data[possible_move_square_index] {
+                                        if piece_to_check_color != target_piece_color { 
+                                            // can capture, yields extra move
+                                            valid_moves.push((target_piece_square_index, possible_move_square_index));
+                                        }
+                                        should_continue_check.0 = false;
+                                    } else { // board square is empty
+                                        valid_moves.push((target_piece_square_index, possible_move_square_index));
+                                    }
+                                } else { // possible move square is outside bounds
+                                    should_continue_check.0 = false;
+                                }
+                            }; // end nw
+                            
+                            
+                        }
+                    },
+                    Rook => {
+                        
+                    },
+                    Queen => {
+                        
+                    },
+                    King => {
+                        
+                    }
+                }
+            }
         }
         todo!();
     }
