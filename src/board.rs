@@ -190,9 +190,9 @@ impl Board {
                     },
                     Bishop | Rook | Queen => {
                         let directions = match target_piece_type {
-                            Bishop => &[-7, -9, 7, 9],
-                            Rook => &[-1, -8, 1, 8],
-                            Queen => &[-1, -7, -8, -9, 1, 7, 8, 9]
+                            Bishop => &[-7, -9, 7, 9][..],
+                            Rook => &[-1, -8, 1, 8][..],
+                            Queen => &[-1, -7, -8, -9, 1, 7, 8, 9][..]
                         };
                         for base_delta in 1..=8 {
                             for dir in directions.iter() {
