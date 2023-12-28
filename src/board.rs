@@ -122,18 +122,18 @@ impl Board {
         }
         return board;
     }
-    pub fn get_valid_moves(&self) -> &[(u8, u8)] {
+    pub fn get_valid_moves(&self) -> &[(isize, isize)] {
         // sorry in advance for the code here
-        let mut valid_moves: Vec<(u8, u8)> = Vec::with_capacity(36);
+        let mut valid_moves: Vec<(isize, isize)> = Vec::with_capacity(36);
         for target_piece_square_index in 0..64 {
-            let target_piece = self.data[target_piece_square_index];
+            let target_piece = self.data[target_piece_square_index as usize];
             if let BoardSquare::Occupied(target_piece_color, target_piece_type) = target_piece {
                 match target_piece_type {
                     Pawn => {
-                        let direction = if target_piece_color == White { -1 } else { 1 };
+                        let direction = if target_piece_color == White { -1i8 } else { 1i8 };
                         let reachable_square_index = target_piece_square_index + (direction * 8);
                         if reachable_square_index >= 0 && reachable_square_index < 64 {
-                            if self.data[reachable_square_index] == BoardSquare::Blank {
+                            if self.data[reachable_square_index as usize] == BoardSquare::Blank {
                                 valid_moves.push((target_piece_square_index, reachable_square_index));
                             }
                         }
@@ -144,7 +144,7 @@ impl Board {
                         if is_on_starting_square {
                             let extended_reachable_square_index = target_piece_square_index + (direction * 16);
                             if extended_reachable_square_index >= 0 && extended_reachable_square_index < 64 {
-                                if self.data[extended_reachable_square_index] == BoardSquare::Blank {
+                                if self.data[extended_reachable_square_index as usize] == BoardSquare::Blank {
                                     valid_moves.push((target_piece_square_index, reachable_square_index));
                                 }
                             }
@@ -158,7 +158,7 @@ impl Board {
                             if ((target_piece_square_index % 8) - (capturable_square_index % 8)).abs() == 7 {
                                 break;
                             }
-                            if let BoardSquare::Occupied(capturable_piece_color, capturable_piece_type) = self.data[capturable_square_index] {
+                            if let BoardSquare::Occupied(capturable_piece_color, capturable_piece_type) = self.data[capturable_square_index as usize] {
                                 if capturable_piece_color != target_piece_color {
                                     valid_moves.push((target_piece_square_index, capturable_square_index));
                                 }
@@ -175,11 +175,11 @@ impl Board {
                             if reachable_square_index < 0 || reachable_square_index >= 64 {
                                 break;
                             }
-                            if ((dir % 8) - (reachable_square_index % 8)).abs() >= 7 {
+                            if ((target_piece_square_index % 8) - (reachable_square_index % 8)).abs() >= 7 {
                                 // please be correct condition
                                 break;
                             }
-                            let reachable_square = self.data[reachable_square_index];
+                            let reachable_square = self.data[reachable_square_index as usize];
                             if let BoardSquare::Occupied(piece_in_range_color, piece_in_range_type) = reachable_square {
                                 if piece_in_range_color == target_piece_color {
                                     break;
@@ -190,9 +190,9 @@ impl Board {
                     },
                     Bishop | Rook | Queen => {
                         let directions = match target_piece_type {
-                            Bishop => [-7, -9, 7, 9],
-                            Rook => [-1, -8, 1, 8],
-                            Queen => [-1, -7, -8, -9, 1, 7, 8, 9]
+                            Bishop => [-7, -9, 7, 9][..],
+                            Rook => [-1, -8, 1, 8][..],
+                            Queen => [-1, -7, -8, -9, 1, 7, 8, 9][..]
                         };
                         for base_delta in 1..=8 {
                             for dir in directions.iter() {
@@ -205,7 +205,7 @@ impl Board {
                                     // yes
                                     break;
                                 }
-                                let reachable_square = self.data[reachable_square_index];
+                                let reachable_square = self.data[reachable_square_index as usize];
                                 if let BoardSquare::Occupied(piece_in_range_color, piece_in_range_type) = reachable_square {
                                     if piece_in_range_color != target_piece_color { // if piece in range is capturable
                                         valid_moves.push((target_piece_square_index, reachable_square_index));
