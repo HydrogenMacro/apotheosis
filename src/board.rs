@@ -122,7 +122,7 @@ impl Board {
         }
         return board;
     }
-    pub fn get_valid_moves(&self) -> &[(isize, isize)] {
+    pub fn get_valid_moves(&self) -> &[(i8, i8)] {
         // sorry in advance for the code here
         let mut valid_moves: Vec<(isize, isize)> = Vec::with_capacity(36);
         for target_piece_square_index in 0..64 {
@@ -133,7 +133,7 @@ impl Board {
                         let direction = if target_piece_color == White { -1i8 } else { 1i8 };
                         let reachable_square_index = target_piece_square_index + (direction * 8);
                         if reachable_square_index >= 0 && reachable_square_index < 64 {
-                            if self.data[reachable_square_index as usize] == BoardSquare::Blank {
+                            if let BoardSquare::Blank = self.data[reachable_square_index as usize] {
                                 valid_moves.push((target_piece_square_index, reachable_square_index));
                             }
                         }
@@ -144,7 +144,7 @@ impl Board {
                         if is_on_starting_square {
                             let extended_reachable_square_index = target_piece_square_index + (direction * 16);
                             if extended_reachable_square_index >= 0 && extended_reachable_square_index < 64 {
-                                if self.data[extended_reachable_square_index as usize] == BoardSquare::Blank {
+                                if let BoardSquare::Blank = self.data[extended_reachable_square_index as usize] {
                                     valid_moves.push((target_piece_square_index, reachable_square_index));
                                 }
                             }
