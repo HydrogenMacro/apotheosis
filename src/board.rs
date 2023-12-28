@@ -155,6 +155,9 @@ impl Board {
                             if capturable_square_index < 0 || capturable_square_index >= 64 {
                                 break;
                             }
+                            if ((target_piece_square_index % 8) - (capturable_square_index % 8)).abs() == 7 {
+                                break;
+                            }
                             if let BoardSquare::Occupied(capturable_piece_color, capturable_piece_type) = self.data[capturable_square_index] {
                                 if capturable_piece_color != target_piece_color {
                                     valid_moves.push((target_piece_square_index, capturable_square_index));
