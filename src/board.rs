@@ -169,7 +169,7 @@ impl Board {
                         let deltas = match target_piece_type {
                             Knight => [10, 17, 15, 6, -10, -17, -15, -6],
                             King => [-9, -8, -7, -1, 1, 7, 8, 9],
-                            _ => {}
+                            _ => unreachable!()
                         };
                         for delta in deltas.iter() {
                             let reachable_square_index = target_piece_square_index + delta;
@@ -194,7 +194,7 @@ impl Board {
                             Bishop => &[-7, -9, 7, 9][..],
                             Rook => &[-1, -8, 1, 8][..],
                             Queen => &[-1, -7, -8, -9, 1, 7, 8, 9][..],
-                            _ => {}
+                            _ => unreachable!()
                         };
                         for base_delta in 1..=8 {
                             for dir in directions.iter() {
