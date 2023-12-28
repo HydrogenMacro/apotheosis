@@ -5,5 +5,5 @@ fn main() {
     // println!("{:?}", bb);
     bb.print();
     let vm = bb.get_valid_moves();
-    println!("{:?} with {} moves", vm, vm.length);
+    println!("{:?} with {} moves", vm, vm.len());
 }
