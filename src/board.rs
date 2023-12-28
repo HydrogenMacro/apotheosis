@@ -124,7 +124,7 @@ impl Board {
     }
     pub fn get_valid_moves(&self) -> &[(i8, i8)] {
         // sorry in advance for the code here
-        let mut valid_moves: Vec<(isize, isize)> = Vec::with_capacity(36);
+        let mut valid_moves: Vec<(i8, i8)> = Vec::with_capacity(36);
         for target_piece_square_index in 0..64 {
             let target_piece = self.data[target_piece_square_index as usize];
             if let BoardSquare::Occupied(target_piece_color, target_piece_type) = target_piece {
@@ -190,9 +190,9 @@ impl Board {
                     },
                     Bishop | Rook | Queen => {
                         let directions = match target_piece_type {
-                            Bishop => [-7, -9, 7, 9][..],
-                            Rook => [-1, -8, 1, 8][..],
-                            Queen => [-1, -7, -8, -9, 1, 7, 8, 9][..]
+                            Bishop => &[-7, -9, 7, 9],
+                            Rook => &[-1, -8, 1, 8],
+                            Queen => &[-1, -7, -8, -9, 1, 7, 8, 9]
                         };
                         for base_delta in 1..=8 {
                             for dir in directions.iter() {
