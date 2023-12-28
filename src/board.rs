@@ -122,7 +122,7 @@ impl Board {
         }
         return board;
     }
-    pub fn get_valid_moves(&self) -> &[(i8, i8)] {
+    pub fn get_valid_moves(&self) -> Vec<(i8, i8)> {
         // sorry in advance for the code here
         let mut valid_moves: Vec<(i8, i8)> = Vec::with_capacity(36);
         for target_piece_square_index in 0..64 {
@@ -222,7 +222,7 @@ impl Board {
                 }
             }
         }
-        todo!();
+        return valid_moves;
     }
     pub fn generate_board_from_piece_move(&self) {
         todo!();
