@@ -1,6 +1,6 @@
 use apotheosis::board::Board;
 
-mod tests {
+mod move_tests {
     #[test]
     fn pawn_test() {
         println!("hi");
