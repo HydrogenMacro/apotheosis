@@ -118,16 +118,16 @@ fn sq(board_square: &str) -> i8 {
     if let (Some(col), Some(row)) = (board_square_chars.next(), board_square_chars.next()) {
         let col_value = match col {
             'a' => 0,
-            'b' => 8,
-            'c' => 16,
-            'd' => 24,
-            'e' => 32,
-            'f' => 40,
-            'g' => 48,
-            'h' => 56,
+            'b' => 1,
+            'c' => 2,
+            'd' => 3,
+            'e' => 4,
+            'f' => 5,
+            'g' => 6,
+            'h' => 7,
             _ => unreachable!()
         };
-        let row_value = row.to_digit(10).unwrap() - 1;
+        let row_value = (8 - row.to_digit(10).unwrap()) * 8;
         return col_value as i8 + row_value as i8;
     }
     panic!("board_square should only have 2 characters");
