@@ -1,5 +1,8 @@
 use apotheosis::board::Board;
-use std::collections::HashSet;
+use std::{
+    collections::HashSet, 
+    hash::Hash
+};
 
 #[test]
 fn pawn_movement_test() {
@@ -126,7 +129,7 @@ fn sq(board_square: &str) -> i8 {
     }
     panic!("board_square should only have 2 characters");
 }
-fn assert_vecs_are_permutations<T: IntoIterator<Item = Eq + Hash>>(vec1: Vec<T>, vec2: Vec<T>) {
+fn assert_vecs_are_permutations<T: IntoIterator<Item = dyn Eq + Hash>>(vec1: Vec<T>, vec2: Vec<T>) {
     let set1 = HashSet::from_iter(vec1);
     let vecs_are_permutations = vec1.len() == vec2.len() && vec2.iter().all(|e| set1.contains(e));
     assert!(vecs_are_permutations);
