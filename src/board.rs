@@ -92,14 +92,14 @@ impl Board {
                 3 => { // en passant target square
                     let v: u8 = match c {
                         'a' => 0,
-                        'b' => 8,
-                        'c' => 16,
-                        'd' => 24,
-                        'e' => 32,
-                        'f' => 40,
-                        'g' => 48,
-                        'h' => 56,
-                        _ if matches!(c.to_digit(10), Some(blank_amount)) => c.to_digit(10).expect("no") as u8,
+                        'b' => 1,
+                        'c' => 2,
+                        'd' => 3,
+                        'e' => 4,
+                        'f' => 5,
+                        'g' => 6,
+                        'h' => 7,
+                        _ if matches!(c.to_digit(10), Some(blank_amount)) => (8u8 - (c.to_digit(10).expect("no") as u8)) * 8u8,
                         _ => 69
                     };
                     if v == 69 {
