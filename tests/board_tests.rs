@@ -3,7 +3,8 @@ use std::{
     collections::HashSet, 
     hash::Hash,
     iter::FromIterator,
-    clone::Clone
+    clone::Clone,
+    fmt::Debug
 };
 
 #[test]
