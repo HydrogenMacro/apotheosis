@@ -22,7 +22,90 @@ fn knight_movement_test() {
         (sq("d5"), sq("e3")),
     ]);
 }
-
+#[test]
+fn bishop_movement_test() {
+    let d5_bishop_board = Board::from_fen("8/8/8/3b4/8/8/8/8 w KQkq - 0 1");
+    assert_eq!(d5_bishop_board.get_valid_moves(), vec![
+        (sq("d5"), sq("a8")),
+        (sq("d5"), sq("b7")),
+        (sq("d5"), sq("c6")),
+        (sq("d5"), sq("e4")),
+        (sq("d5"), sq("f3")),
+        (sq("d5"), sq("g2")),
+        (sq("d5"), sq("a2")),
+        (sq("d5"), sq("b3")),
+        (sq("d5"), sq("c4")),
+        (sq("d5"), sq("e6")),
+        (sq("d5"), sq("f7")),
+        (sq("d5"), sq("g8"))
+    ]);
+}
+#[test]
+fn rook_movement_test() {
+    let d5_rook_board = Board::from_fen("8/8/8/3r4/8/8/8/8 w KQkq - 0 1");
+    assert_eq!(d5_rook_board.get_valid_moves(), vec![
+        (sq("d5"), sq("a5")),
+        (sq("d5"), sq("b5")),
+        (sq("d5"), sq("c5")),
+        (sq("d5"), sq("e5")),
+        (sq("d5"), sq("f5")),
+        (sq("d5"), sq("g5")),
+        (sq("d5"), sq("h5")),
+        (sq("d5"), sq("d1")),
+        (sq("d5"), sq("d2")),
+        (sq("d5"), sq("d3")),
+        (sq("d5"), sq("d4")),
+        (sq("d5"), sq("d6")),
+        (sq("d5"), sq("d7")),
+        (sq("d5"), sq("d8"))
+    ]);
+}
+#[test]
+fn queen_movement_test() {
+    let d5_queen_board = Board::from_fen("8/8/8/3q4/8/8/8/8 w KQkq - 0 1");
+    assert_eq!(d5_queen_board.get_valid_moves(), vec![
+        (sq("d5"), sq("a5")),
+        (sq("d5"), sq("b5")),
+        (sq("d5"), sq("c5")),
+        (sq("d5"), sq("e5")),
+        (sq("d5"), sq("f5")),
+        (sq("d5"), sq("g5")),
+        (sq("d5"), sq("h5")),
+        (sq("d5"), sq("d1")),
+        (sq("d5"), sq("d2")),
+        (sq("d5"), sq("d3")),
+        (sq("d5"), sq("d4")),
+        (sq("d5"), sq("d6")),
+        (sq("d5"), sq("d7")),
+        (sq("d5"), sq("d8")),
+        (sq("d5"), sq("a8")),
+        (sq("d5"), sq("b7")),
+        (sq("d5"), sq("c6")),
+        (sq("d5"), sq("e4")),
+        (sq("d5"), sq("f3")),
+        (sq("d5"), sq("g2")),
+        (sq("d5"), sq("a2")),
+        (sq("d5"), sq("b3")),
+        (sq("d5"), sq("c4")),
+        (sq("d5"), sq("e6")),
+        (sq("d5"), sq("f7")),
+        (sq("d5"), sq("g8"))
+    ]);
+}
+#[test]
+fn king_movement_test() {
+    let d5_king_board = Board::from_fen("8/8/8/3k4/8/8/8/8 w KQkq - 0 1");
+    assert_eq!(d5_king_board.get_valid_moves(), vec![
+        (sq("d5"), sq("c6")),
+        (sq("d5"), sq("d6")),
+        (sq("d5"), sq("e6")),
+        (sq("d5"), sq("c5")),
+        (sq("d5"), sq("e5")),
+        (sq("d5"), sq("c4")),
+        (sq("d5"), sq("d4")),
+        (sq("d5"), sq("e4")),
+    ]);
+}
 fn sq(board_square: &str) -> i8 {
     let mut board_square_chars = board_square.chars();
     if let (Some(col), Some(row)) = (board_square_chars.next(), board_square_chars.next()) {
