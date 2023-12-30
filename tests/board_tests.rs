@@ -119,7 +119,7 @@ fn sq(board_square: &str) -> i8 {
             'g' => 48,
             'h' => 56,
             _ => unreachable!()
-        }
+        };
         let row_value = row.to_digit(10).unwrap() - 1;
         return col_value as i8 + row_value as i8;
     }
