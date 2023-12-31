@@ -132,8 +132,15 @@ fn sq(board_square: &str) -> i8 {
     }
     panic!("board_square should only have 2 characters");
 }
-fn assert_vecs_are_permutations<T: Eq + Hash + Clone + Debug>(vec1: Vec<T>, vec2: Vec<T>) {
-    let set1: HashSet<T> = HashSet::from_iter(vec1.iter().cloned());
-    let vecs_are_permutations = vec1.len() == vec2.len() && vec2.iter().all(|e| set1.contains(e));
-    assert!(vecs_are_permutations, "{:?}\n is not a permutation of \n{:?}", vec1, vec2);
+fn assert_vecs_are_permutations<T: Eq + Hash + Clone + Debug + Ord>(vec1: Vec<T>, vec2: Vec<T>) {
+    if vec1.len() != vec2.len() {
+        panic!("{} is not the same length as {}", vec1, vec2);
+    }
+    for (e1, e2) in vec1.iter().sort().zip(vec2.iter()) {
+        if e1 != e2 {
+            panic!("!! {} != {} !!", e1, e2);
+        } else {
+            println!("{} == {}", e1, e2);
+        }
+    }
 }
