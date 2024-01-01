@@ -145,7 +145,7 @@ impl Board {
                             let extended_reachable_square_index = target_piece_square_index + (direction * 16);
                             if extended_reachable_square_index >= 0 && extended_reachable_square_index < 64 {
                                 if let BoardSquare::Blank = self.data[extended_reachable_square_index as usize] {
-                                    valid_moves.push((target_piece_square_index, reachable_square_index));
+                                    valid_moves.push((target_piece_square_index, extended_reachable_square_index));
                                 }
                             }
                         }
