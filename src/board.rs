@@ -176,7 +176,7 @@ impl Board {
                             if reachable_square_index < 0 || reachable_square_index >= 64 {
                                 break;
                             }
-                            if ((target_piece_square_index % 8) - (reachable_square_index % 8)).abs() >= 7 {
+                            if ((target_piece_square_index % 8) - (reachable_square_index % 8)).abs() >= 5 {
                                 // please be correct condition
                                 break;
                             }
