@@ -100,7 +100,8 @@ impl Board {
                         'g' => 6,
                         'h' => 7,
                         _ if matches!(c.to_digit(10), Some(blank_amount)) => (8u8 - (c.to_digit(10).expect("no") as u8)) * 8u8,
-                        _ => 69
+                        '_' => 69,
+                        _ => unreachable!()
                     };
                     if v == 69 {
                         board.en_passant_target_square = None;
