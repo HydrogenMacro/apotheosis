@@ -11,8 +11,8 @@ use std::{
 fn pawn_movement_test() {
     let a7_pawn_board = Board::from_fen("8/p7/8/8/8/8/8/8 w KQkq - 0 1");
     assert_vecs_are_permutations(a7_pawn_board.get_valid_moves(), vec![(sq("a7"), sq("a6")), (sq("a7"), sq("a5"))]);
-    let a6_pawn_board = Board::from_fen("8/8/p6/8/8/8/8/8 w KQkq - 0 1");
-    assert_vecs_are_permutations(a7_pawn_board.get_valid_moves(), vec![(sq("a7"), sq("a6"))]);
+    let a6_pawn_board = Board::from_fen("8/8/p7/8/8/8/8/8 w KQkq - 0 1");
+    assert_vecs_are_permutations(a7_pawn_board.get_valid_moves(), vec![(sq("a6"), sq("a5"))]);
 }
 
 #[test]
