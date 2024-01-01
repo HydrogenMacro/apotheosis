@@ -132,7 +132,7 @@ fn sq(board_square: &str) -> i8 {
     }
     panic!("board_square should only have 2 characters");
 }
-fn assert_vecs_are_permutations<T: Eq + Hash + Clone + Debug + Ord>(vec1: Vec<T>, vec2: Vec<T>) {
+fn assert_vecs_are_permutations<T: Eq + Hash + Clone + Debug + Ord>(mut vec1: Vec<T>, mut vec2: Vec<T>) {
     if vec1.len() != vec2.len() {
         panic!("{:?} is not the same length as {:?}", vec1, vec2);
     }
