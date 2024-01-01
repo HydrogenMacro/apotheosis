@@ -150,9 +150,10 @@ impl Board {
                                 }
                             }
                         }
-                        let capture_deltas = [7, 9];
-                        for capture_delta in capture_deltas.iter() {
-                            let capturable_square_index = target_piece_square_index + (capture_delta * direction);
+                        let base_capture_deltas = [7, 9];
+                        for base_capture_delta in capture_deltas.iter() {
+                            let capture_delta = base_capture_delta * direction;
+                            let capturable_square_index = target_piece_square_index + capture_delta;
                             if capturable_square_index < 0 || capturable_square_index >= 64 {
                                 break;
                             }
@@ -162,6 +163,19 @@ impl Board {
                             if let BoardSquare::Occupied(capturable_piece_color, capturable_piece_type) = self.data[capturable_square_index as usize] {
                                 if capturable_piece_color != target_piece_color {
                                     valid_moves.push((target_piece_square_index, capturable_square_index));
+                                }
+                            } else {
+                                if let Some(en_passant_target_square_index) = self.en_passant_target_square {
+                                    if en_passant_target_square_index == capturable_square_index {
+                                        if let BoardSquare::Occupied(adjacent_piece_color, adjacent_piece_type) = self.data[target_piece_square_index + direction] {
+                                            if adjacent_piece_color != target_piece_color {
+                                                if let Pawn = adjacent_piece_type {
+                                                    valid_moves.push((target_piece_square_index, en_passant_target_square_index));
+                                                    // TODO: this captures
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -224,6 +238,7 @@ impl Board {
                 }
             }
         }
+        // castling
         return valid_moves;
     }
     pub fn generate_board_from_piece_move(&self) {
