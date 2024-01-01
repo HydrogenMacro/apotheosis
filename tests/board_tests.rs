@@ -143,8 +143,7 @@ fn assert_vecs_are_permutations<T: Eq + Hash + Clone + Debug + Ord>(mut vec1: Ve
     for (e1, e2) in vec1.iter().zip(vec2.iter()) {
         if e1 != e2 {
             panic!("!! {:?} != {:?} !!", e1, e2);
-        } else {
-            println!("{:?} == {:?}", e1, e2);
         }
     }
+    println!("{:?} is a permutation with {:?}", vec1, vec2);
 }
