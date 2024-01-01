@@ -214,6 +214,7 @@ impl Board {
                                     }
                                     break;
                                 } else {
+                                    println!("{} to {} is valid", target_piece_square_index, reachable_square_index);
                                     valid_moves.push((target_piece_square_index, reachable_square_index));
                                 }
                             }
