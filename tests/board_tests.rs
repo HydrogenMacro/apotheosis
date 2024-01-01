@@ -134,13 +134,15 @@ fn sq(board_square: &str) -> i8 {
 }
 fn assert_vecs_are_permutations<T: Eq + Hash + Clone + Debug + Ord>(vec1: Vec<T>, vec2: Vec<T>) {
     if vec1.len() != vec2.len() {
-        panic!("{} is not the same length as {}", vec1, vec2);
+        panic!("{:?} is not the same length as {:?}", vec1, vec2);
     }
-    for (e1, e2) in vec1.sort().iter().zip(vec2.sort().iter()) {
+    vec1.sort();
+    vec2.sort();
+    for (e1, e2) in vec1.iter().zip(vec2.iter()) {
         if e1 != e2 {
-            panic!("!! {} != {} !!", e1, e2);
+            panic!("!! {:?} != {:?} !!", e1, e2);
         } else {
-            println!("{} == {}", e1, e2);
+            println!("{:?} == {:?}", e1, e2);
         }
     }
 }
