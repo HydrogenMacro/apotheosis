@@ -39,6 +39,7 @@ fn bishop_movement_test() {
         (sq("d5"), sq("e4")),
         (sq("d5"), sq("f3")),
         (sq("d5"), sq("g2")),
+        (sq("d5"), sq("h1")),
         (sq("d5"), sq("a2")),
         (sq("d5"), sq("b3")),
         (sq("d5"), sq("c4")),
