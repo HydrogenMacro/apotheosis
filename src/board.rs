@@ -1,4 +1,7 @@
-use std::collections::HashSet;
+use std::{
+    collections::HashSet,
+};
+use ethnum::prelude;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Piece {
