@@ -3,22 +3,57 @@ use std::{
 };
 use ethnum::*;
 
-pub struct BoardMove(u16);
-pub struct Board(u256, u32);
-
 pub type BoardSquare = u8;
 pub mod BoardSquare {
     #[inline]
-    pub fn get_square_in_direction(origin_square: BoardSquare, dx: isize, dy: isize) -> Option<BoardSquare> {
-        let resulting_square = origin_square + dx + (8 * dy);
-        if resulting_square < 0 || resulting_square >= 64 {
+    pub const fn get_square_in_direction(origin_square: BoardSquare, dx: isize, dy: isize) -> Option<BoardSquare> {
+        let origin_square_x = origin_square % 8;
+        let origin_square_y = (origin_square - origin_square_x) / 8;
+        
+        let resulting_square = origin_square as isize + dx + (-8 * dy);
+        let resulting_square_x = origin_square_x as isize + dx;
+        let resulting_square_y = origin_square_y as isize - dy;
+        
+        if resulting_square_x < 0 || resulting_square_x >= 8 {
             return None;
+        }
+        if resulting_square_y < 0 || resulting_square_y >= 8 {
+            return None;
+        }
+        
+        return Some(resulting_square as BoardSquare);
+    }
+    #[inline]
+    pub const fn get_square_above(origin_square: BoardSquare) -> Option<BoardSquare> {
+        let resulting_square = origin_square - 8;
+        if resulting_square < 0 {
+            return None
         }
         return Some(resulting_square);
     }
     #[inline]
-    pub fn get_square_above() {
-        
+    pub const fn get_square_below(origin_square: BoardSquare) -> Option<BoardSquare> {
+        let resulting_square = origin_square + 8;
+        if resulting_square >= 64 {
+            return None
+        }
+        return Some(resulting_square);
+    }
+    #[inline]
+    pub const fn get_square_left_of(origin_square: BoardSquare) -> Option<BoardSquare> {
+        let resulting_square = origin_square - 1;
+        if resulting_square % 8 == 7 {
+            return None
+        }
+        return Some(resulting_square);
+    }
+    #[inline]
+    pub const fn get_square_right_of(origin_square: BoardSquare) -> Option<BoardSquare> {
+        let resulting_square = origin_square + 1;
+        if resulting_square % 8 == 0 {
+            return None
+        }
+        return Some(resulting_square);
     }
 }
 
@@ -55,14 +90,20 @@ pub mod BoardPiece {
     pub const WHITE_KING: BoardPiece = 0b1111;
     
     #[inline]
-    pub fn color(&self) -> BoardColor {
+    pub const fn color(&self) -> BoardColor {
         return self & 0b1000u8;
     }
     #[inline]
-    pub fn piece_type(&self) -> BoardPieceType {
+    pub const fn piece_type(&self) -> BoardPieceType {
         return self & 0b0111u8;
     }
+    #[inline]
+    pub const fn is_piece(&self) -> bool {
+        return self.piece_type != BLANK;
+    }
 }
+
+pub struct BoardMove(u16);
 
 impl BoardMove {
     pub const CASTLE_BQ: BoardMove = BoardMove(0b1000_0000_0000_0000u16);
@@ -87,6 +128,8 @@ impl BoardMove {
         // maybe just provide a mask
     }
 }
+
+pub struct Board(u256, u32);
 impl Board {
     pub fn from_fen(fen: &str) -> Board {
         todo!();
@@ -102,12 +145,63 @@ impl Board {
         return Some(square_contents);
     }
     pub fn get_valid_moves(&self) -> Vec<BoardMove> {
-        let valid_moves: Vec<BoardMove> = Vec::new();
+        let mut valid_moves: Vec<BoardMove> = Vec::new();
+        
+        let square_of_king = 1;
+        
         for origin_board_square in 0..64 {
             if let Some(origin_board_piece) = self.get_piece_at(origin_board_piece) {
+                if !origin_board_piece.is_piece() {
+                    continue;
+                }
                 match origin_board_piece.piece_type() {
                     BoardPieceType::PAWN => {
+                        let is_white = origin_board_piece.color() == BoardColor::White;
+                        let possible_short_move_resulting_square = if is_white {
+                            get_square_above(origin_board_square)
+                        } else {
+                            get_square_below(origin_board_square)
+                        };
+                        if let Some(short_move_resulting_square) = possible_short_move_resulting_square {
+                            if !self.get_piece_at(short_move_resulting_square).is_piece() {
+                                valid_moves.push(BoardMove::from_board_squares(origin_board_square, short_move_resulting_square));
+                            }
+                        }
                         
+                        let possible_extended_move_resulting_square = if is_white {
+                            get_square_in_direction(origin_board_square, 0, 2)
+                        } else {
+                            get_square_in_direction(origin_board_square, 0, -2)
+                        };
+                        if let Some(extended_move_resulting_square) = possible_extended_move_resulting_square {
+                            if !self.get_piece_at(extended_move_resulting_square).is_piece() {
+                                valid_moves.push(BoardMove::from_board_squares(origin_board_square, extended_move_resulting_square));
+                            }
+                        }
+                        
+                        let possible_left_capture_resulting_square = if is_white {
+                            get_square_in_direction(origin_board_square, -1, 1)
+                        } else {
+                            get_square_in_direction(origin_board_square, 1, -1)
+                        };
+                        if let Some(left_capture_resulting_square) = possible_left_capture_resulting_square {
+                            let piece_to_capture = self.get_piece_at(left_capture_resulting_square);
+                            if piece_to_capture.is_piece() && piece_to_capture.color() != origin_board_piece.color() {
+                                valid_moves.push(BoardMove::from_board_squares(origin_board_square, left_capture_resulting_square));
+                            }
+                        }
+                        
+                        let possible_right_capture_resulting_square = if is_white {
+                            get_square_in_direction(origin_board_square, 1, 1)
+                        } else {
+                            get_square_in_direction(origin_board_square, -1, -1)
+                        };
+                        if let Some(right_capture_resulting_square) = possible_right_capture_resulting_square {
+                            let piece_to_capture = self.get_piece_at(right_capture_resulting_square);
+                            if piece_to_capture.is_piece() && piece_to_capture.color() != origin_board_piece.color() {
+                                valid_moves.push(BoardMove::from_board_squares(origin_board_square, right_capture_resulting_square));
+                            }
+                        }
                     },
                     BoardPieceType::BISHOP => {
                         
