@@ -10,7 +10,15 @@ pub type BoardSquare = u8;
 pub mod BoardSquare {
     #[inline]
     pub fn get_square_in_direction(origin_square: BoardSquare, dx: isize, dy: isize) -> Option<BoardSquare> {
-        return origin_square + dx + (8 * dy);
+        let resulting_square = origin_square + dx + (8 * dy);
+        if resulting_square < 0 || resulting_square >= 64 {
+            return None;
+        }
+        return Some(resulting_square);
+    }
+    #[inline]
+    pub fn get_square_above() {
+        
     }
 }
 
