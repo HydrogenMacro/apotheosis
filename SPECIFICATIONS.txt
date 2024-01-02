@@ -1,22 +1,18 @@
 A board move takes the form of an u16
 formats:
-    aabb bbbb cccc ccdd
+    abbb bbbc cccc cd00
 castling format:
-    aabc dddd dddd dddd
-first two bytes (a):
-    00 - normal move
-    10 - castle
-    01 - en passant
+    abc* **** **** ****
+first byte (a):
+    0 - normal move/ en passant
+    1 - castle
     if normal or en passant:
         bbbbbb (0-63) describes from square
         cccccc describes dest square
-        if en passant:
-             remember to capture
+        d describes if move is en passant
     if castle:
         b describes color (0 - black, 1 - white)
         c describes side (0 - queen, 1 - king)
-    dd are unused
-
 
 A board takes the form of an u256
 piece codes:
