@@ -2,7 +2,7 @@ A board move takes the form of an u16
 formats:
     abbb bbbc cccc cd00
 castling format:
-    abc* **** **** ****
+    abc0 0000 0000 0000
 first byte (a):
     0 - normal move/ en passant
     1 - castle
