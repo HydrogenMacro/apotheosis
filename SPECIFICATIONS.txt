@@ -14,26 +14,26 @@ first byte (a):
         b describes color (0 - black, 1 - white)
         c describes side (0 - queen, 1 - king)
 
-A board takes the form of an u256
-piece codes:
-    000 - blank
-    001 - pawn
-    010 - knight
-    100 - bishop
-    101 - rook
-    110 - queen
-    111 - king
-this will take 3*64=192 bits
-193rd byte describes color (0 - black, 1 - white)
-194-197 describes castling rights:
-    194 - w queen
-    195 - w king
-    196 - b queen
-    197 - b king
-198-204 describes en passant target square:
-    if 198th byte is 1 then en passant is possible
-    else ignore
-205-211 describes halfmove clock
-    ranges from 0 - 50
-    if it is move 49 and black makes an half move
-    declare an draw
+
+A board takes the form of an (u256, u32)
+first part:
+    piece codes:
+		    0000 - blank
+		    x001 - pawn
+		    x010 - knight
+		    x100 - bishop
+			  x101 - rook
+		    x110 - queen
+		    x111 - king
+		    x describes color
+second part:
+    format:
+        abbb bcdd dddd 0000
+    a describes turn
+    bbbb describes castling rights:
+        (wk, wq, bk, bq)
+    c describes if en passant is plausible
+    dddddd describes en passant target square
+
+
+A game takes the form of (board: (u256, u32), halfmove: u8, threefold_check: HashMap)
