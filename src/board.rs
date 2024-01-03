@@ -3,10 +3,10 @@ use std::{
 };
 use ethnum::*;
 
-pub type BoardSquare = u8;
+pub type square = u8;
 pub mod BoardSquare {
     #[inline]
-    pub const fn from(board_sqaure_notation: &str) -> BoardSquare {
+    pub const fn from(board_sqaure_notation: &str) -> square {
         if board_square_notation.len() != 2 {
             panic!("BoardSquare::from takes a 2 lengthed string, like \"d3\"");
         }
@@ -38,7 +38,7 @@ pub mod BoardSquare {
         panic!("BoardSquare::from() failed");
     }
     #[inline]
-    pub const fn get_square_in_direction(origin_square: BoardSquare, dx: isize, dy: isize) -> Option<BoardSquare> {
+    pub const fn get_square_in_direction(origin_square: square, dx: isize, dy: isize) -> Option<square> {
         let origin_square_x = origin_square % 8;
         let origin_square_y = (origin_square - origin_square_x) / 8;
         
@@ -53,10 +53,10 @@ pub mod BoardSquare {
             return None;
         }
         
-        return Some(resulting_square as BoardSquare);
+        return Some(resulting_square as square);
     }
     #[inline]
-    pub const fn get_square_above(origin_square: BoardSquare) -> Option<BoardSquare> {
+    pub const fn get_square_above(origin_square: square) -> Option<square> {
         let resulting_square = origin_square - 8;
         if resulting_square < 0 {
             return None
@@ -64,7 +64,7 @@ pub mod BoardSquare {
         return Some(resulting_square);
     }
     #[inline]
-    pub const fn get_square_below(origin_square: BoardSquare) -> Option<BoardSquare> {
+    pub const fn get_square_below(origin_square: square) -> Option<square> {
         let resulting_square = origin_square + 8;
         if resulting_square >= 64 {
             return None
@@ -72,7 +72,7 @@ pub mod BoardSquare {
         return Some(resulting_square);
     }
     #[inline]
-    pub const fn get_square_left_of(origin_square: BoardSquare) -> Option<BoardSquare> {
+    pub const fn get_square_left_of(origin_square: square) -> Option<square> {
         let resulting_square = origin_square - 1;
         if resulting_square % 8 == 7 {
             return None
@@ -80,7 +80,7 @@ pub mod BoardSquare {
         return Some(resulting_square);
     }
     #[inline]
-    pub const fn get_square_right_of(origin_square: BoardSquare) -> Option<BoardSquare> {
+    pub const fn get_square_right_of(origin_square: square) -> Option<square> {
         let resulting_square = origin_square + 1;
         if resulting_square % 8 == 0 {
             return None
@@ -145,14 +145,14 @@ impl BoardMove {
     pub const CASTLE_WK: BoardMove = BoardMove(0b1110_0000_0000_0000u16);
     
     #[inline]
-    pub fn from_board_squares(origin_square: BoardSquare, dest_square: BoardSquare) -> BoardMove {
+    pub fn from_board_squares(origin_square: square, dest_square: square) -> BoardMove {
         return BoardMove(
                 ((origin_square as u16) << 9) 
                 | ((dest_square as u16) << 3)
         );
     }
     #[inline]
-    pub fn from_board_squares_as_en_passant(origin_square: u8, dest_square: u8) -> BoardSquare {
+    pub fn from_board_squares_as_en_passant(origin_square: u8, dest_square: u8) -> BoardMove {
         return BoardMove(
             0b0000_0000_0000_0100u16
                 | ((origin_square as u16) << 9)
@@ -173,8 +173,8 @@ impl Board {
         let mut board_state = 0u32;
 
         let mut current_board_image_pos = 0;
-        let mut white_king_pos: BoardSquare;
-        let mut black_king_pos: BoardSquare;
+        let mut white_king_pos: square;
+        let mut black_king_pos: square;
         for fen_board_char in fen_board.chars() {
             let possible_board_piece = match fen_board_char {
                 'p' => Some(BoardPiece::BLACK_PAWN),
@@ -232,7 +232,7 @@ impl Board {
         
         let en_passant_target = fen_parts.next().unwrap();
         if en_passant_target != "-" {
-            let en_passant_target_square = BoardMove::from(en_passant_target_square);
+            let en_passant_target_square = BoardSquare::from(en_passant_target_square);
             board_state |= 1u32 << 26;
             board_state |= en_passant_target_square << 20;
         }
@@ -248,7 +248,7 @@ impl Board {
         return ((self.0 | mask) >> 31u32) as BoardColor;
     }
     #[inline]
-    pub fn get_piece_at(&self, square: BoardSquare) -> Option<BoardPiece> {
+    pub fn get_piece_at(&self, square: square) -> Option<BoardPiece> {
         let mask_distance_away = square * 4;
         let mask = U256::new(0b1111) << mask_distance_away;
         let square_contents = ((self.0 & mask) >> mask_distance_away) as BoardPiece;
@@ -343,4 +343,4 @@ fn main() {
     let b = Board::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     println!("{:?}", b);
 }
-/*/
+//*/
