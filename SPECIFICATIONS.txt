@@ -21,10 +21,10 @@ first part:
 		    0000 - blank
 		    x001 - pawn
 		    x010 - knight
-		    x100 - bishop
-			  x101 - rook
-		    x110 - queen
-		    x111 - king
+		    x011 - bishop
+			  x100 - rook
+		    x101 - queen
+		    x110 - king
 		    x describes color
 second part:
     format:
