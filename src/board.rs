@@ -6,6 +6,10 @@ use ethnum::*;
 pub type BoardSquare = u8;
 pub mod BoardSquare {
     #[inline]
+    pub const fn from(board_sqaure_notation: &str) -> BoardSquare {
+        
+    }
+    #[inline]
     pub const fn get_square_in_direction(origin_square: BoardSquare, dx: isize, dy: isize) -> Option<BoardSquare> {
         let origin_square_x = origin_square % 8;
         let origin_square_y = (origin_square - origin_square_x) / 8;
@@ -133,19 +137,74 @@ pub struct Board(u256, u32);
 impl Board {
     pub fn from_fen(fen: &str) -> Board {
         let mut fen_parts = fen.split_whitespace();
-        let fen_board = fen_parts.next();
-        let active_color = fen_parts.next();
-        let castle_info = fen_parts.next();
-        let en_passant_target_square = fen_parts.next();
         
+        let fen_board = fen_parts.next().unwrap();
         let mut board_image = U256::new();
         let mut board_state = 0u32;
-        for board_piece in fen_board.chars() {
-            match board_piece {
-                'p' => {},
-                _ | '/' => {}
+
+        let mut current_board_image_pos = 0;
+        let mut white_king_pos: &str;
+        let mut black_king_pos: &str;
+        for fen_board_char in fen_board.chars() {
+            let possible_board_piece = match fen_board_char {
+                'p' => Some(BoardPiece::BLACK_PAWN),
+                'n' => Some(BoardPiece::BLACK_KNIGHT),
+                'b' => Some(BoardPiece::BLACK_BISHOP),
+                'r' => Some(BoardPiece::BLACK_ROOK),
+                'q' => Some(BoardPiece::BLACK_QUEEN),
+                'k' => {
+                    black_king_pos = current_board_image_pos;
+                    Some(BoardPiece::BLACK_KING)
+                },
+                'P' => Some(BoardPiece::WHITE_PAWN),
+                'N' => Some(BoardPiece::WHITE_KNIGHT),
+                'B' => Some(BoardPiece::WHITE_BISHOP),
+                'R' => Some(BoardPiece::WHITE_ROOK),
+                'Q' => Some(BoardPiece::WHITE_QUEEN),
+                'K' => {
+                    white_king_pos = current_board_image_pos;
+                    Some(BoardPiece::WHITE_KING)
+                },
+                _ -> None
+            };
+            if let Some(board_piece) = possible_board_piece {
+                board_image |= (board_piece as u256 << current_board_image_pos * 4);
+                current_board_image_pos += 1;
+            } else {
+                match possible_board_piece {
+                    '1' => current_board_image_pos += 1,
+                    '2' => current_board_image_pos += 2,
+                    '3' => current_board_image_pos += 3,
+                    '4' => current_board_image_pos += 4,
+                    '5' => current_board_image_pos += 5,
+                    '6' => current_board_image_pos += 6,
+                    '7' => current_board_image_pos += 7,
+                    '8' => current_board_image_pos += 8,
+                    _ | '/' => {}
+                }
             }
         }
+
+        let active_color = fen_parts.next().unwrap();
+        let active_color_bit_flag_mask = if active_color == "w" { 1u32 << 31u32 } else { 0u32 };
+        board_state |= active_color_bit_flag_mask;
+        
+        let castle_availibility = fen_parts.next().unwrap();
+        for castle_flag in castle_availibility.char() {
+            let castle_flag_mask = match castle_flag {
+                'K' => 1u32 << 30,
+                'Q' => 1u32 << 29,
+                'k' => 1u32 << 28,
+                'q' => 1u32 << 27,
+            }
+            board_state |= castle_flag_mask;
+        }
+        
+        let en_passant_target_square = fen_parts.next().unwrap();
+        if en_passant_target_square != "-" {
+            
+        }
+        
         todo!();
     }
     #[inline]
