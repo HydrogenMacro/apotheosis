@@ -7,7 +7,33 @@ pub type BoardSquare = u8;
 pub mod BoardSquare {
     #[inline]
     pub const fn from(board_sqaure_notation: &str) -> BoardSquare {
-        
+        if board_square_notation.len() != 2 {
+            panic!("BoardSquare::from takes a 2 lengthed string, like \"d3\"");
+        }
+        if let [row, col] = board_square_notation.as_bytes() {
+            let row_value: u32 = match row {
+                b'a' => 0,
+                b'b' => 1,
+                b'c' => 2,
+                b'd' => 3,
+                b'e' => 4,
+                b'f' => 5,
+                b'g' => 6,
+                b'h' => 7,
+            };
+            let col_value: u32 = match col {
+                b'a' => 0,
+                b'b' => 8,
+                b'c' => 16,
+                b'd' => 24,
+                b'e' => 32,
+                b'f' => 40,
+                b'g' => 48,
+                b'h' => 56,
+            };
+            return row_value + col_value;
+        }
+        panic!("BoardSquare::from() failed");
     }
     #[inline]
     pub const fn get_square_in_direction(origin_square: BoardSquare, dx: isize, dy: isize) -> Option<BoardSquare> {
