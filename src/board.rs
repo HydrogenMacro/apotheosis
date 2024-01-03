@@ -132,6 +132,20 @@ impl BoardMove {
 pub struct Board(u256, u32);
 impl Board {
     pub fn from_fen(fen: &str) -> Board {
+        let mut fen_parts = fen.split_whitespace();
+        let fen_board = fen_parts.next();
+        let active_color = fen_parts.next();
+        let castle_info = fen_parts.next();
+        let en_passant_target_square = fen_parts.next();
+        
+        let mut board_image = U256::new();
+        let mut board_state = 0u32;
+        for board_piece in fen_board.chars() {
+            match board_piece {
+                'p' => {},
+                _ | '/' => {}
+            }
+        }
         todo!();
     }
     #[inline]
