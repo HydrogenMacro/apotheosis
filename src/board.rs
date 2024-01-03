@@ -20,6 +20,7 @@ pub mod BoardSquare {
                 b'f' => 5,
                 b'g' => 6,
                 b'h' => 7,
+                _ => unreachable!()
             };
             let col_value: u32 = match col {
                 b'a' => 0,
@@ -30,6 +31,7 @@ pub mod BoardSquare {
                 b'f' => 40,
                 b'g' => 48,
                 b'h' => 56,
+                _ => unreachable!()
             };
             return row_value + col_value;
         }
@@ -169,8 +171,8 @@ impl Board {
         let mut board_state = 0u32;
 
         let mut current_board_image_pos = 0;
-        let mut white_king_pos: &str;
-        let mut black_king_pos: &str;
+        let mut white_king_pos: BoardSquare;
+        let mut black_king_pos: BoardSquare;
         for fen_board_char in fen_board.chars() {
             let possible_board_piece = match fen_board_char {
                 'p' => Some(BoardPiece::BLACK_PAWN),
@@ -226,12 +228,17 @@ impl Board {
             board_state |= castle_flag_mask;
         }
         
-        let en_passant_target_square = fen_parts.next().unwrap();
-        if en_passant_target_square != "-" {
-            
+        let en_passant_target = fen_parts.next().unwrap();
+        if en_passant_target != "-" {
+            let en_passant_target_square = BoardMove::from(en_passant_target_square);
+            board_state |= 1u32 << 26;
+            board_state |= en_passant_target_square << 20;
         }
-        
-        todo!();
+
+        board_state |= white_king_pos << 14;
+        board_state |= black_king_pos << 8;        
+
+        return Board(board_image, board_state);
     }
     #[inline]
     pub fn get_piece_at(&self, square: BoardSquare) -> Option<BoardPiece> {
