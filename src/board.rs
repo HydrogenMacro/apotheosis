@@ -89,37 +89,37 @@ pub mod BoardSquare {
     }
 }
 
-pub type BoardColor = u8;
+pub type BoardColor u8;
 pub mod BoardColor {
     pub const BLACK: BoardColor = 0b0000;
-    pub const WHITE: BoardColor = 0b1000;
+    pub const WHITE: BoardColor = 0b0001;
 }
 
 pub type BoardPieceType = u8;
 pub mod BoardPieceType {
-    pub const PAWN: BoardPieceType = 0b0001;
-    pub const KNIGHT: BoardPieceType = 0b0010;
-    pub const BISHOP: BoardPieceType = 0b0011;
-    pub const ROOK: BoardPieceType = 0b0100;
-    pub const QUEEN: BoardPieceType = 0b0101;
-    pub const KING: BoardPieceType = 0b0111;
+    pub const PAWN: BoardPiece = 0b0010;
+    pub const KNIGHT: BoardPiece = 0b0100;
+    pub const BISHOP: BoardPiece = 0b0110;
+    pub const ROOK: BoardPiece = 0b1000;
+    pub const QUEEN: BoardPiece = 0b1010;
+    pub const KING: BoardPiece = 0b1100;
 }
 
 pub type BoardPiece = u8;
 pub mod BoardPiece {
     pub const BLANK: BoardPiece = 0b0000;
-    pub const BLACK_PAWN: BoardPiece = 0b0001;
-    pub const BLACK_KNIGHT: BoardPiece = 0b0010;
-    pub const BLACK_BISHOP: BoardPiece = 0b0011;
-    pub const BLACK_ROOK: BoardPiece = 0b0100;
-    pub const BLACK_QUEEN: BoardPiece = 0b0101;
-    pub const BLACK_KING: BoardPiece = 0b0110;
-    pub const WHITE_PAWN: BoardPiece = 0b1001;
-    pub const WHITE_KNIGHT: BoardPiece = 0b1010;
-    pub const WHITE_BISHOP: BoardPiece = 0b1011;
-    pub const WHITE_ROOK: BoardPiece = 0b1100;
-    pub const WHITE_QUEEN: BoardPiece = 0b1101;
-    pub const WHITE_KING: BoardPiece = 0b1110;
+    pub const BLACK_PAWN: BoardPiece = 0b0010;
+    pub const BLACK_KNIGHT: BoardPiece = 0b0100;
+    pub const BLACK_BISHOP: BoardPiece = 0b0110;
+    pub const BLACK_ROOK: BoardPiece = 0b1000;
+    pub const BLACK_QUEEN: BoardPiece = 0b1010;
+    pub const BLACK_KING: BoardPiece = 0b1100;
+    pub const WHITE_PAWN: BoardPiece = 0b0011;
+    pub const WHITE_KNIGHT: BoardPiece = 0b0101;
+    pub const WHITE_BISHOP: BoardPiece = 0b0111;
+    pub const WHITE_ROOK: BoardPiece = 0b1001;
+    pub const WHITE_QUEEN: BoardPiece = 0b1011;
+    pub const WHITE_KING: BoardPiece = 0b1101;
     
     #[inline]
     pub const fn color(&self) -> BoardColor {
@@ -135,6 +135,7 @@ pub mod BoardPiece {
     }
 }
 
+#[derive(PartialEq, Debug)]
 pub struct BoardMove(u16);
 
 impl BoardMove {
@@ -161,6 +162,7 @@ impl BoardMove {
     }
 }
 
+#[derive(PartialEq, Debug)]
 pub struct Board(u256, u32);
 impl Board {
     pub fn from_fen(fen: &str) -> Board {
@@ -239,6 +241,11 @@ impl Board {
         board_state |= black_king_pos << 8;        
 
         return Board(board_image, board_state);
+    }
+    #[inline]
+    pub fn active_color(&self) -> BoardColor {
+        let mask = 1u32 << 31u32;
+        return ((self.0 | mask) >> 31u32) as BoardColor;
     }
     #[inline]
     pub fn get_piece_at(&self, square: BoardSquare) -> Option<BoardPiece> {
@@ -331,3 +338,9 @@ impl Board {
         todo!();
     }
 }
+//*
+fn main() {
+    let b = Board::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    println!("{:?}", b);
+}
+/*/
