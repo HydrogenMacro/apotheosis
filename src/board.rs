@@ -81,13 +81,13 @@ pub mod BoardPiece {
     pub const BLACK_BISHOP: BoardPiece = 0b0011;
     pub const BLACK_ROOK: BoardPiece = 0b0100;
     pub const BLACK_QUEEN: BoardPiece = 0b0101;
-    pub const BLACK_KING: BoardPiece = 0b0111;
+    pub const BLACK_KING: BoardPiece = 0b0110;
     pub const WHITE_PAWN: BoardPiece = 0b1001;
     pub const WHITE_KNIGHT: BoardPiece = 0b1010;
     pub const WHITE_BISHOP: BoardPiece = 0b1011;
     pub const WHITE_ROOK: BoardPiece = 0b1100;
     pub const WHITE_QUEEN: BoardPiece = 0b1101;
-    pub const WHITE_KING: BoardPiece = 0b1111;
+    pub const WHITE_KING: BoardPiece = 0b1110;
     
     #[inline]
     pub const fn color(&self) -> BoardColor {
