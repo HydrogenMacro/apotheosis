@@ -5,6 +5,7 @@ use ethnum::*;
 
 pub type square = u8;
 pub mod BoardSquare {
+    use crate::*;
     #[inline]
     pub const fn from(board_sqaure_notation: &str) -> square {
         if board_square_notation.len() != 2 {
@@ -101,49 +102,52 @@ pub mod BoardSquare {
     }
 }
 
-pub type color u8;
+pub type color = u8;
 pub mod BoardColor {
+    use crate::*;
     pub const BLACK: color = 0b0000;
     pub const WHITE: color = 0b0001;
 }
 
 pub type piecetype = u8;
 pub mod BoardPieceType {
-    pub const PAWN: BoardPiece = 0b0010;
-    pub const KNIGHT: BoardPiece = 0b0100;
-    pub const BISHOP: BoardPiece = 0b0110;
-    pub const ROOK: BoardPiece = 0b1000;
-    pub const QUEEN: BoardPiece = 0b1010;
-    pub const KING: BoardPiece = 0b1100;
+    use crate::*;
+    pub const PAWN: piecetype = 0b0010;
+    pub const KNIGHT: piecetype = 0b0100;
+    pub const BISHOP: piecetype = 0b0110;
+    pub const ROOK: piecetype = 0b1000;
+    pub const QUEEN: piecetype = 0b1010;
+    pub const KING: piecetype = 0b1100;
 }
 
 pub type piece = u8;
 pub mod BoardPiece {
-    pub const BLANK: BoardPiece = 0b0000;
-    pub const BLACK_PAWN: BoardPiece = 0b0010;
-    pub const BLACK_KNIGHT: BoardPiece = 0b0100;
-    pub const BLACK_BISHOP: BoardPiece = 0b0110;
-    pub const BLACK_ROOK: BoardPiece = 0b1000;
-    pub const BLACK_QUEEN: BoardPiece = 0b1010;
-    pub const BLACK_KING: BoardPiece = 0b1100;
-    pub const WHITE_PAWN: BoardPiece = 0b0011;
-    pub const WHITE_KNIGHT: BoardPiece = 0b0101;
-    pub const WHITE_BISHOP: BoardPiece = 0b0111;
-    pub const WHITE_ROOK: BoardPiece = 0b1001;
-    pub const WHITE_QUEEN: BoardPiece = 0b1011;
-    pub const WHITE_KING: BoardPiece = 0b1101;
+    use crate::*;
+    pub const BLANK: piece = 0b0000;
+    pub const BLACK_PAWN: piece = 0b0010;
+    pub const BLACK_KNIGHT: piece = 0b0100;
+    pub const BLACK_BISHOP: piece = 0b0110;
+    pub const BLACK_ROOK: piece = 0b1000;
+    pub const BLACK_QUEEN: piece = 0b1010;
+    pub const BLACK_KING: piece = 0b1100;
+    pub const WHITE_PAWN: piece = 0b0011;
+    pub const WHITE_KNIGHT: piece = 0b0101;
+    pub const WHITE_BISHOP: piece = 0b0111;
+    pub const WHITE_ROOK: piece = 0b1001;
+    pub const WHITE_QUEEN: piece = 0b1011;
+    pub const WHITE_KING: piece = 0b1101;
     
     #[inline]
-    pub const fn color(&self) -> color {
-        return self & 0b1000u8;
+    pub const fn color(board_piece: piece) -> color {
+        return board_piece & 0b1000u8;
     }
     #[inline]
-    pub const fn piece_type(&self) -> piecetype {
-        return self & 0b0111u8;
+    pub const fn piece_type(board_piece: piece) -> piecetype {
+        return board_piece & 0b0111u8;
     }
     #[inline]
-    pub const fn is_piece(&self) -> bool {
-        return self.piece_type != BLANK;
+    pub const fn is_piece(board_piece: piece) -> bool {
+        return board_piece != BLANK;
     }
 }
 
@@ -331,10 +335,10 @@ impl Board {
                     BoardPieceType::BISHOP => {
                         for base_delta in 1..8 {
                             let reachable_squares = [
-                                get_square_in_direction(1 * base_delta, 1 * base_delta),
-                                get_square_in_direction(1 * base_delta, -1 * base_delta),
-                                get_square_in_direction(-1 * base_delta, 1 * base_delta),
-                                get_square_in_direction(-1 * base_delta, -1 * base_delta),
+                                BoardSquare::get_square_in_direction(1 * base_delta, 1 * base_delta),
+                                BoardSquare::get_square_in_direction(1 * base_delta, -1 * base_delta),
+                                BoardSquare::get_square_in_direction(-1 * base_delta, 1 * base_delta),
+                                BoardSquare::get_square_in_direction(-1 * base_delta, -1 * base_delta),
                             ];
                             for dir in 0..4 {
                                 let reachable_square = reachable_squares[dir];
