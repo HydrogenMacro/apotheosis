@@ -89,13 +89,13 @@ pub mod BoardSquare {
     }
 }
 
-pub type BoardColor u8;
+pub type color u8;
 pub mod BoardColor {
-    pub const BLACK: BoardColor = 0b0000;
-    pub const WHITE: BoardColor = 0b0001;
+    pub const BLACK: color = 0b0000;
+    pub const WHITE: color = 0b0001;
 }
 
-pub type BoardPieceType = u8;
+pub type piecetype = u8;
 pub mod BoardPieceType {
     pub const PAWN: BoardPiece = 0b0010;
     pub const KNIGHT: BoardPiece = 0b0100;
@@ -105,7 +105,7 @@ pub mod BoardPieceType {
     pub const KING: BoardPiece = 0b1100;
 }
 
-pub type BoardPiece = u8;
+pub type piece = u8;
 pub mod BoardPiece {
     pub const BLANK: BoardPiece = 0b0000;
     pub const BLACK_PAWN: BoardPiece = 0b0010;
@@ -122,11 +122,11 @@ pub mod BoardPiece {
     pub const WHITE_KING: BoardPiece = 0b1101;
     
     #[inline]
-    pub const fn color(&self) -> BoardColor {
+    pub const fn color(&self) -> color {
         return self & 0b1000u8;
     }
     #[inline]
-    pub const fn piece_type(&self) -> BoardPieceType {
+    pub const fn piece_type(&self) -> piecetype {
         return self & 0b0111u8;
     }
     #[inline]
@@ -243,15 +243,15 @@ impl Board {
         return Board(board_image, board_state);
     }
     #[inline]
-    pub fn active_color(&self) -> BoardColor {
+    pub fn active_color(&self) -> color {
         let mask = 1u32 << 31u32;
-        return ((self.0 | mask) >> 31u32) as BoardColor;
+        return ((self.0 | mask) >> 31u32) as color;
     }
     #[inline]
-    pub fn get_piece_at(&self, square: square) -> Option<BoardPiece> {
+    pub fn get_piece_at(&self, square: square) -> Option<piece> {
         let mask_distance_away = square * 4;
         let mask = U256::new(0b1111) << mask_distance_away;
-        let square_contents = ((self.0 & mask) >> mask_distance_away) as BoardPiece;
+        let square_contents = ((self.0 & mask) >> mask_distance_away) as piece;
         if square_contents == BoardPiece::BLANK {
             return None;
         }
