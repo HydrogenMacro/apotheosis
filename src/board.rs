@@ -207,10 +207,10 @@ impl Board {
                     white_king_pos = current_board_image_pos;
                     Some(BoardPiece::WHITE_KING)
                 },
-                _ -> None
+                _ => None
             };
             if let Some(board_piece) = possible_board_piece {
-                board_image |= (board_piece as u256 << current_board_image_pos * 4);
+                board_image |= ((board_piece as u256) << current_board_image_pos * 4);
                 current_board_image_pos += 1;
             } else {
                 match possible_board_piece {
@@ -238,7 +238,7 @@ impl Board {
                 'Q' => 1u32 << 29,
                 'k' => 1u32 << 28,
                 'q' => 1u32 << 27,
-            }
+            };
             board_state |= castle_flag_mask;
         }
         
@@ -363,7 +363,7 @@ impl Board {
                     BoardPieceType::KING => {
                         
                     },
-                    _ => panic!("{:b}" is not a valid piece, origin_board_piece)
+                    _ => panic!("{:b} is not a valid piece", origin_board_piece)
                 }
             }
         }
