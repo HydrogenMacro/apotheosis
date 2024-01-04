@@ -38,6 +38,14 @@ pub mod BoardSquare {
         panic!("BoardSquare::from() failed");
     }
     #[inline]
+    pub const fn get_x_pos_of(square_to_check: square) -> u8 {
+        
+    }
+    #[inline]
+    pub const fn get_y_pos_of(square_to_check: square) -> u8 {
+        
+    }
+    #[inline]
     pub const fn get_square_in_direction(origin_square: square, dx: isize, dy: isize) -> Option<square> {
         let origin_square_x = origin_square % 8;
         let origin_square_y = (origin_square - origin_square_x) / 8;
@@ -86,6 +94,10 @@ pub mod BoardSquare {
             return None
         }
         return Some(resulting_square);
+    }
+    #[inline]
+    pub const fn are_colinear(square_a: square, square_b: square) -> bool {
+        
     }
 }
 
@@ -317,7 +329,27 @@ impl Board {
                         }
                     },
                     BoardPieceType::BISHOP => {
-                        
+                        for base_delta in 1..8 {
+                            let reachable_squares = [
+                                get_square_in_direction(1 * base_delta, 1 * base_delta),
+                                get_square_in_direction(1 * base_delta, -1 * base_delta),
+                                get_square_in_direction(-1 * base_delta, 1 * base_delta),
+                                get_square_in_direction(-1 * base_delta, -1 * base_delta),
+                            ];
+                            for dir in 0..4 {
+                                let reachable_square = reachable_squares[dir];
+                                let reachable_piece = self.get_piece_at(reachable_square);
+                                if reachable_piece.is_piece() {
+                                    if origin_board_piece.color() != reachable_piece.color() {
+                                        
+                                    } else {
+                                        break;
+                                    }
+                                } else {
+                                    
+                                }
+                            }
+                        }
                     },
                     BoardPieceType::KNIGHT => {
                         
