@@ -1,7 +1,13 @@
 use std::{
     collections::HashSet,
+    cmp
 };
 use ethnum::*;
+
+pub type direction = isize;
+pub mod Direction {
+
+}
 
 pub type square = u8;
 pub mod BoardSquare {
@@ -40,14 +46,13 @@ pub mod BoardSquare {
     }
     #[inline]
     pub const fn get_x_pos_of(square_to_check: square) -> u8 {
-        
+        return square_to_check & 7;
     }
     #[inline]
     pub const fn get_y_pos_of(square_to_check: square) -> u8 {
-        
+        return square_to_check << 3;
     }
-    #[inline]
-    pub const fn get_square_in_direction(origin_square: square, dx: isize, dy: isize) -> Option<square> {
+    pub const fn get_square_from_direction(origin_square: square, direction: [i8; 2]) -> Option<square> {
         let origin_square_x = origin_square % 8;
         let origin_square_y = (origin_square - origin_square_x) / 8;
         
@@ -95,10 +100,6 @@ pub mod BoardSquare {
             return None
         }
         return Some(resulting_square);
-    }
-    #[inline]
-    pub const fn are_colinear(square_a: square, square_b: square) -> bool {
-        
     }
 }
 
@@ -287,9 +288,9 @@ impl Board {
                     BoardPieceType::PAWN => {
                         let is_white = origin_board_piece.color() == BoardColor::White;
                         let possible_short_move_resulting_square = if is_white {
-                            get_square_above(origin_board_square)
+                            BoardSquare::get_square_above(origin_board_square)
                         } else {
-                            get_square_below(origin_board_square)
+                            BoardSquare::get_square_below(origin_board_square)
                         };
                         if let Some(short_move_resulting_square) = possible_short_move_resulting_square {
                             if !self.get_piece_at(short_move_resulting_square).is_piece() {
@@ -298,9 +299,9 @@ impl Board {
                         }
                         
                         let possible_extended_move_resulting_square = if is_white {
-                            get_square_in_direction(origin_board_square, 0, 2)
+                            BoardSquare::get_square_in_direction(origin_board_square, 0, 2)
                         } else {
-                            get_square_in_direction(origin_board_square, 0, -2)
+                            BoardSquare::get_square_in_direction(origin_board_square, 0, -2)
                         };
                         if let Some(extended_move_resulting_square) = possible_extended_move_resulting_square {
                             if !self.get_piece_at(extended_move_resulting_square).is_piece() {
@@ -309,9 +310,9 @@ impl Board {
                         }
                         
                         let possible_left_capture_resulting_square = if is_white {
-                            get_square_in_direction(origin_board_square, -1, 1)
+                            BoardSquare::get_square_in_direction(origin_board_square, -1, 1)
                         } else {
-                            get_square_in_direction(origin_board_square, 1, -1)
+                            BoardSquare::get_square_in_direction(origin_board_square, 1, -1)
                         };
                         if let Some(left_capture_resulting_square) = possible_left_capture_resulting_square {
                             let piece_to_capture = self.get_piece_at(left_capture_resulting_square);
@@ -321,9 +322,9 @@ impl Board {
                         }
                         
                         let possible_right_capture_resulting_square = if is_white {
-                            get_square_in_direction(origin_board_square, 1, 1)
+                            BoardSquare::get_square_in_direction(origin_board_square, 1, 1)
                         } else {
-                            get_square_in_direction(origin_board_square, -1, -1)
+                            BoardSquare::get_square_in_direction(origin_board_square, -1, -1)
                         };
                         if let Some(right_capture_resulting_square) = possible_right_capture_resulting_square {
                             let piece_to_capture = self.get_piece_at(right_capture_resulting_square);
@@ -333,24 +334,24 @@ impl Board {
                         }
                     },
                     BoardPieceType::BISHOP => {
-                        for base_delta in 1..8 {
-                            let reachable_squares = [
-                                BoardSquare::get_square_in_direction(1 * base_delta, 1 * base_delta),
-                                BoardSquare::get_square_in_direction(1 * base_delta, -1 * base_delta),
-                                BoardSquare::get_square_in_direction(-1 * base_delta, 1 * base_delta),
-                                BoardSquare::get_square_in_direction(-1 * base_delta, -1 * base_delta),
-                            ];
-                            for dir in 0..4 {
-                                let reachable_square = reachable_squares[dir];
+                        let reachable_squares_count = [
+                            cmp::min(BoardSquare::get_x_pos_of(origin_board_square), BoardSquare::get_y_pos_of(origin_board_square)), // nw
+                            cmp::min(7u8 - BoardSquare::get_x_pos_of(origin_board_square), BoardSquare::get_y_pos_of(origin_board_square)), // ne
+                            7u8 - cmp::max(7u8 - BoardSquare::get_x_pos_of(origin_board_square), BoardSquare::get_y_pos_of(origin_board_square)), // sw
+                            cmp::max(7u8 - BoardSquare::get_x_pos_of(origin_board_square), 7u8 - BoardSquare::get_y_pos_of(origin_board_square)), // se
+                        ];
+                        for direction in 0..4 {
+                            let reachable_square_count = possible_reachable_squares_count[direction];
+                            for delta in 1..=possible_reachable_square_count {
+                                let reachable_square = match direction {
+                                    0 => BoardSquare::get_square_in_direction(origin_board_square, delta, -delta).unwrap(),
+                                    1 => BoardSquare::get_square_in_direction(origin_board_square, delta, delta).unwrap(),
+                                    2 => BoardSquare::get_square_in_direction(origin_board_square, -delta, -delta).unwrap(),
+                                    3 => BoardSquare::get_square_in_direction(origin_board_square, -delta, delta).unwrap(),
+                                };
                                 let reachable_piece = self.get_piece_at(reachable_square);
                                 if reachable_piece.is_piece() {
-                                    if origin_board_piece.color() != reachable_piece.color() {
-                                        
-                                    } else {
-                                        break;
-                                    }
-                                } else {
-                                    
+                                      
                                 }
                             }
                         }
