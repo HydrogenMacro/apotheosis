@@ -19,12 +19,12 @@ A board takes the form of an (u256, u32)
 first part:
     piece codes:
 		    0000 - blank
-		    x001 - pawn
-		    x010 - knight
-		    x011 - bishop
-			  x100 - rook
-		    x101 - queen
-		    x110 - king
+		    001x - pawn
+		    010x - knight
+		    011x - bishop
+		    100x - rook
+		    101x - queen
+		    110x - king
 		    x describes color
 second part:
     format:
