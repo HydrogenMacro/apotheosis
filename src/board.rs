@@ -256,8 +256,10 @@ impl Board {
                     let is_white = origin_color == WHITE;
                     let dir = if is_white { -1i8 } else { 1i8 };
                     
+                    let base_reachable_square = origin_square
+                        .get_square_in_direction(Direction(0, dir * 1))
+                        .expect("this can only be invalid in invalid positions");
                     
-                    let base_reachable_square = origin_square.get_square_in_direction(Direction(0, dir * 1));
                     
                     let is_on_home_square = origin_square.y() == 6 && is_white 
                         || origin_square.y() == 1 && !is_white;
