@@ -1,6 +1,6 @@
 A board move takes the form of an u16
 formats:
-    abbb bbbc cccc cd00
+    abbb bbbc cccc cdee
 castling format:
     abc0 0000 0000 0000
 first byte (a):
@@ -10,13 +10,19 @@ first byte (a):
         bbbbbb (0-63) describes from square
         cccccc describes dest square
         d describes if move is en passant
+        ee describes promotion type:
+            00 - knight
+            01 - bishop
+            10 - rook
+            11 - queen
     if castle:
         b describes color (0 - black, 1 - white)
         c describes side (0 - queen, 1 - king)
 
 
-A board takes the form of an (u256, u32)
-first part:
+A board takes the form of an (u128, u128, u32)
+first/second part:
+    describes pieces
     piece codes:
 		    0000 - blank
 		    001x - pawn
@@ -26,7 +32,7 @@ first part:
 		    101x - queen
 		    110x - king
 		    x describes color
-second part:
+third part:
     format:
         abbb bcdd dddd eeee eeff ffff 0000 0000
     a describes turn
