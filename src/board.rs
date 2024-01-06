@@ -8,6 +8,14 @@ use ethnum::*;
 #[derive(PartialEq, PartialOrd, Debug)]
 pub struct Direction(i8, i8);
 impl Direction {
+    #[inline]
+    pub const fn dx(&self) {
+        return self.0;
+    }
+    #[inline]
+    pub const fn dy(&self) {
+        return self.1;
+    }
     pub const N: Direction = Direction(0, 1); 
     pub const NE: Direction = Direction(1, 1); 
     pub const E: Direction = Direction(1, 0); 
@@ -64,37 +72,16 @@ impl BoardSquare {
     pub const fn y(&self) -> u8 {
         return self.0 << 3;
     }
-    #[inline]
-    pub const fn get_square_above(origin_square: BoardSquare) -> Option<BoardSquare> {
-        let resulting_square = origin_square.pos() - 8;
-        if resulting_square < 0 {
+    pub const fn get_square_in_direction(&self, dir: Direction) -> Option<BoardSquare> {
+        let new_x = self.x() + dir.dx();
+        let new_y = self.y() + dir.dy();
+        if new_x < 0 
+        || new_x >= 8
+        || new_y < 0 
+        || new_y >= 8 {
             return None;
         }
-        return Some(BoardSquare(resulting_square));
-    }
-    #[inline]
-    pub const fn get_square_below(origin_square: BoardSquare) -> Option<BoardSquare> {
-        let resulting_square = origin_square.pos() + 8;
-        if resulting_square >= 64 {
-            return None;
-        }
-        return Some(BoardSquare(resulting_square));
-    }
-    #[inline]
-    pub const fn get_square_left_of(origin_square: BoardSquare) -> Option<BoardSquare> {
-        let resulting_square = origin_square.pos() - 1;
-        if resulting_square % 8 == 7 {
-            return None;
-        }
-        return Some(BoardSquare(resulting_square));
-    }
-    #[inline]
-    pub const fn get_square_right_of(origin_square: BoardSquare) -> Option<BoardSquare> {
-        let resulting_square = origin_square.pos() + 1;
-        if resulting_square % 8 == 0 {
-            return None;
-        }
-        return Some(BoardSquare(resulting_square));
+        return Some(BoardSquare(new_x + new_y * 8));
     }
 }
 
@@ -102,16 +89,26 @@ pub type Color = u8;
 pub const BLACK: Color = 0b0000;
 pub const WHITE: Color = 0b0001;
 
-pub type Piece = u8;
-pub const PAWN: Piece = 0b0010;
-pub const KNIGHT: Piece = 0b0100;
-pub const BISHOP: Piece = 0b0110;
-pub const ROOK: Piece = 0b1000;
-pub const QUEEN: Piece = 0b1010;
-pub const KING: Piece = 0b1100;
+pub type PieceType = u8;
+pub const PAWN: PieceType = 0b0010;
+pub const KNIGHT: PieceType = 0b0100;
+pub const BISHOP: PieceType = 0b0110;
+pub const ROOK: PieceType = 0b1000;
+pub const QUEEN: PieceType = 0b1010;
+pub const KING: PieceType = 0b1100;
 
+pub type Piece = u8;
+#[inline]
 pub const fn is_piece(possible_piece: Piece) -> bool {
     return possible_piece & 0b1111 != 0;
+}
+#[inline]
+pub const fn get_piece_type(piece: Piece) -> PieceType {
+    return piece & 0b1110;
+}
+#[inline]
+pub const fn get_piece_color(piece: Piece) -> PieceType {
+    return piece & 0b0001;
 }
 
 #[derive(PartialEq, Debug)]
@@ -219,7 +216,7 @@ impl Board {
         return Board(board_image, board_state);
     }
     #[inline]
-    pub fn active_color(&self) -> u8 {
+    pub fn active_color(&self) -> Color {
         let mask = 1u32 << 31u32;
         return ((self.1 | mask) >> 31u32) as u8;
     }
@@ -238,8 +235,19 @@ impl Board {
         
         let square_of_king = 1;
         
-        for origin_board_square in 0..64 {
-            
+        for origin_square_pos in 0..64 {
+            let origin_square = BoardSquare(origin_square_pos);
+            let possible_origin_piece = self.get_piece_at(origin_square);
+            if let None = possible_origin_piece { continue; }
+            let origin_piece = possible_origin_piece.unwrap();
+            let origin_color = get_piece_color(origin_piece);
+            let origin_piece_type = get_piece_type(origin_piece);
+            match origin_piece_type {
+                PAWN => {
+                    let dir = if origin_color == WHITE { -1u8 } else { 1u8 };
+                    
+                },
+            }
         }
         todo!();
     }
