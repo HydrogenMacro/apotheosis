@@ -151,8 +151,8 @@ impl Board {
         let mut board_state = 0u32;
 
         let mut current_board_image_pos = 0;
-        let mut white_king_pos: u8;
-        let mut black_king_pos: u8;
+        let mut white_king_pos: u8 = Default::default();
+        let mut black_king_pos: u8 = Default::default();
         for fen_board_char in fen_board.chars() {
             let possible_board_piece = match fen_board_char {
                 'p' => Some(BLACK | PAWN),
