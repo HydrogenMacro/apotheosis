@@ -181,7 +181,7 @@ impl Board {
                 '6' => { current_board_image_pos += 6; None },
                 '7' => { current_board_image_pos += 7; None },
                 '8' => { current_board_image_pos += 8; None },
-                _ | '/' => None
+                _ => None
             };
             if let Some(board_piece) = possible_board_piece {
                 board_image |= U256::from(board_piece) << (current_board_image_pos * 4);
@@ -200,6 +200,7 @@ impl Board {
                 'Q' => 1u32 << 29,
                 'k' => 1u32 << 28,
                 'q' => 1u32 << 27,
+                _ => 0
             };
             board_state |= castle_flag_mask;
         }
