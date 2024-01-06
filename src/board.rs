@@ -9,11 +9,11 @@ use ethnum::*;
 pub struct Direction(i8, i8);
 impl Direction {
     #[inline]
-    pub const fn dx(&self) {
+    pub const fn dx(&self) -> i8 {
         return self.0;
     }
     #[inline]
-    pub const fn dy(&self) {
+    pub const fn dy(&self) -> i8 {
         return self.1;
     }
     pub const N: Direction = Direction(0, 1); 
@@ -121,14 +121,21 @@ impl BoardMove {
     pub const CASTLE_WK: BoardMove = BoardMove(0b1110_0000_0000_0000u16);
     
     #[inline]
-    pub fn from_board_squares(origin_square: BoardSquare, dest_square: BoardSquare) -> BoardMove {
+    pub fn new(origin_square: BoardSquare, dest_square: BoardSquare) -> BoardMove {
         return BoardMove(
                 ((origin_square.pos() as u16) << 9) 
                 | ((dest_square.pos() as u16) << 3)
         );
     }
     #[inline]
-    pub fn from_board_squares_as_en_passant(origin_square: BoardSquare, dest_square: BoardSquare) -> BoardMove {
+    pub fn new_from_square_positions(origin_square_pos: u8, dest_square_pos: u8) -> BoardMove {
+        return BoardMove(
+                ((origin_square as u16) << 9) 
+                | ((dest_square as u16) << 3)
+        );
+    }
+    #[inline]
+    pub fn new_as_en_passant(origin_square: BoardSquare, dest_square: BoardSquare) -> BoardMove {
         return BoardMove(
             0b0000_0000_0000_0100u16
                 | ((origin_square.pos() as u16) << 9)
@@ -240,11 +247,33 @@ impl Board {
             let possible_origin_piece = self.get_piece_at(origin_square);
             if let None = possible_origin_piece { continue; }
             let origin_piece = possible_origin_piece.unwrap();
+            
             let origin_color = get_piece_color(origin_piece);
             let origin_piece_type = get_piece_type(origin_piece);
+            
             match origin_piece_type {
                 PAWN => {
-                    let dir = if origin_color == WHITE { -1u8 } else { 1u8 };
+                    let is_white = origin_color == WHITE;
+                    let dir = if is_white { -1i8 } else { 1i8 };
+                    
+                    
+                    let base_reachable_square = origin_square.get_square_in_direction(Direction(0, dir * 1));
+                    
+                    let is_on_home_square = origin_square.y() == 6 && is_white 
+                        || origin_square.y() == 1 && !is_white;
+                    if is_on_home_square {
+                        let extended_reachable_square = origin_square
+                            .get_square_in_direction(Direction(0, dir * 2))
+                            .expect("cannot go oob when on home square");
+                        if let None = self.get_piece_at(extended_reachable_square) {
+                            valid_moves.push(BoardMove::new(origin_square, base_reachable_square));
+                        }
+                    }
+                    
+                    let capturable_squares = [
+                        origin_square.get_square_in_direction(Direction(-1, dir * 1)),
+                        origin_square.get_square_in_direction(Direction(1, dir * 1))
+                    ];
                     
                 },
             }
