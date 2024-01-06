@@ -147,7 +147,7 @@ impl Board {
         let mut fen_parts = fen.split_whitespace();
         
         let fen_board = fen_parts.next().unwrap();
-        let mut board_image = U256::new();
+        let mut board_image = U256::new(0);
         let mut board_state = 0u32;
 
         let mut current_board_image_pos = 0;
@@ -184,7 +184,7 @@ impl Board {
                 _ | '/' => None
             };
             if let Some(board_piece) = possible_board_piece {
-                board_image |= (board_piece as u256) << (current_board_image_pos * 4);
+                board_image |= U256::from(board_piece) << (current_board_image_pos * 4);
                 current_board_image_pos += 1;
             }
         }
@@ -219,7 +219,7 @@ impl Board {
     #[inline]
     pub fn active_color(&self) -> u8 {
         let mask = 1u32 << 31u32;
-        return ((self.0 | mask) >> 31u32) as u8;
+        return ((self.1 | mask) >> 31u32) as u8;
     }
     #[inline]
     pub fn get_piece_at(&self, square: BoardSquare) -> Option<Piece> {
