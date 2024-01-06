@@ -225,7 +225,7 @@ impl Board {
     pub fn get_piece_at(&self, square: BoardSquare) -> Option<Piece> {
         let mask_distance_away = square.pos() * 4;
         let mask = U256::new(0b1111) << mask_distance_away;
-        let square_contents = ((self.0 & mask) >> mask_distance_away) as Piece;
+        let square_contents = ((self.0 & mask) >> mask_distance_away).as_u8();
         if !is_piece(square_contents) {
             return None;
         }
