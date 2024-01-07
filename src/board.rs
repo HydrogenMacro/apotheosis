@@ -73,15 +73,15 @@ impl BoardSquare {
         return self.0 << 3;
     }
     pub const fn get_square_in_direction(&self, dir: Direction) -> Option<BoardSquare> {
-        let new_x = self.x() + dir.dx();
-        let new_y = self.y() + dir.dy();
+        let new_x = self.x() as i8 + dir.dx();
+        let new_y = self.y() as i8 + dir.dy();
         if new_x < 0 
         || new_x >= 8
         || new_y < 0 
         || new_y >= 8 {
             return None;
         }
-        return Some(BoardSquare(new_x + new_y * 8));
+        return Some(BoardSquare((new_x + new_y * 8) as u8));
     }
 }
 
@@ -130,8 +130,8 @@ impl BoardMove {
     #[inline]
     pub fn new_from_square_positions(origin_square_pos: u8, dest_square_pos: u8) -> BoardMove {
         return BoardMove(
-                ((origin_square as u16) << 9) 
-                | ((dest_square as u16) << 3)
+                ((origin_square_pos as u16) << 9) 
+                | ((dest_square_pos as u16) << 3)
         );
     }
     #[inline]
@@ -274,12 +274,60 @@ impl Board {
                         }
                     }
                     
-                    let capturable_squares = [
+                    let possible_capturable_squares = [
                         origin_square.get_square_in_direction(Direction(-1, dir * 1)),
                         origin_square.get_square_in_direction(Direction(1, dir * 1))
                     ];
+                    for possible_capturable_square in capturable_squares {
+                        if let Some(capturable_square) = possible_capturable_square {
+                            if let Some(capturable_piece) = self.get_piece_at(capturable_square) {
+                                let capturable_piece_color = get_piece_color(capturable_piece);
+                                if origin_piece_color != capturable_piece_color {
+                                    valid_moves.push(BoardMove::new(origin_square, capturable_square));
+                                }
+                            }
+                        }
+                    }
+                },
+                KNIGHT => {
+                    let move_directions = [
+                        Direction(1, 2),
+                        Direction(-1, 2),
+                        Direction(1, -2),
+                        Direction(-1, -2),
+                        Direction(2, 1),
+                        Direction(-2, 1),
+                        Direction(2, -1),
+                        Direction(-2, -1)
+                    ];
+                    for move_direction in move_directions {
+                        let possible_reachable_square = origin_square.get_square_in_direction(
+                            move_direction
+                        );
+                        if let Some(reachable_square) = possible_reachable_square {
+                            if let Some(reachable_piece) = self.get_piece_at(reachable_square) {
+                                if get_piece_color(reachable_piece) != origin_piece_color {
+                                    valid_moves.push(BoardMove::new(origin_square, reachable_square));
+                                }
+                            } else {
+                                valid_moves.push(BoardMove::new(origin_square, reachable_square));
+                            }
+                        }
+                    }
+                },
+                BISHOP => {
                     
                 },
+                ROOK => {
+                    
+                },
+                QUEEN => {
+                    
+                },
+                KING => {
+                    
+                },
+                _ => {}
             }
         }
         todo!();
