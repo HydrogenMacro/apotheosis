@@ -17,7 +17,7 @@ impl Direction {
         return self.1;
     }
     pub const fn as_square_pos_delta(&self) -> u8 {
-        return self.0 + self.1 * 8;
+        return (self.0 + self.1 * 8) as u8;
     }
     pub const N: Direction = Direction(0, 1); 
     pub const NE: Direction = Direction(1, 1); 
@@ -86,21 +86,21 @@ impl BoardSquare {
         }
         return Some(BoardSquare((new_x + new_y * 8) as u8));
     }
-    pub const fn get_all_squares_in_direction(&self, dir: Direction) -> Vec<BoardSquare> {
+    pub fn get_all_squares_in_direction(&self, dir: Direction) -> Vec<BoardSquare> {
         let amount_of_squares = match dir {
             Direction::N => self.y(), 
-            Direction::NE => cmp::min(7 - xpos, ypos),
+            Direction::NE => cmp::min(7 - self.x(), self.y()),
             Direction::E => 7 - self.x(), 
-            Direction::SE => 7 - cmp::max(xpos, ypos),
+            Direction::SE => 7 - cmp::max(self.x(), self.y()),
             Direction::S => 7 - self.y(), 
-            Direction::SW => 7 - cmp::min(7 - xpos, ypos),
+            Direction::SW => 7 - cmp::min(7 - self.x(), self.y()),
             Direction::W => self.x(), 
-            Direction::NW => cmp::min(xpos, ypos),
+            Direction::NW => cmp::min(self.x(), self.y()),
             _ => panic!("get_all_squares_in_direction only supports cardinal/ordinal directions")
         };
         let squares_in_direction = Vec::with_capacity(amount_of_squares);
         for square_num in 1..=amount_of_squares {
-            let square_in_dir = self.pos() + ((dir.x() * square_num) + (dir.y() * square_num * 8));
+            let square_in_dir = self.pos() + ((dir.dx() * square_num) + (dir.dy() * square_num * 8));
             squares_in_direction.push(square_in_dir);
         }
         return squares_in_direction;
@@ -300,7 +300,7 @@ impl Board {
                         origin_square.get_square_in_direction(Direction(-1, dir * 1)),
                         origin_square.get_square_in_direction(Direction(1, dir * 1))
                     ];
-                    for possible_capturable_square in capturable_squares {
+                    for possible_capturable_square in possible_capturable_squares {
                         if let Some(capturable_square) = possible_capturable_square {
                             if let Some(capturable_piece) = self.get_piece_at(capturable_square) {
                                 let capturable_piece_color = get_piece_color(capturable_piece);
@@ -343,7 +343,7 @@ impl Board {
                         Direction::NE,
                         Direction::SE,
                         Direction::SW
-                    ]
+                    ];
                 },
                 ROOK => {
                     
