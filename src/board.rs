@@ -259,7 +259,9 @@ impl Board {
                     let base_reachable_square = origin_square
                         .get_square_in_direction(Direction(0, dir * 1))
                         .expect("this can only be invalid in invalid positions");
-                    
+                    if let None = self.get_piece_at(base_reachable_square) {
+                        valid_moves.push(BoardMove::new(origin_square, base_reachable_square));
+                    }
                     
                     let is_on_home_square = origin_square.y() == 6 && is_white 
                         || origin_square.y() == 1 && !is_white;
@@ -268,7 +270,7 @@ impl Board {
                             .get_square_in_direction(Direction(0, dir * 2))
                             .expect("cannot go oob when on home square");
                         if let None = self.get_piece_at(extended_reachable_square) {
-                            valid_moves.push(BoardMove::new(origin_square, base_reachable_square));
+                            valid_moves.push(BoardMove::new(origin_square, extended_reachable_square));
                         }
                     }
                     
