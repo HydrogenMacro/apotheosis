@@ -16,6 +16,9 @@ impl Direction {
     pub const fn dy(&self) -> i8 {
         return self.1;
     }
+    pub const fn as_square_pos_delta(&self) -> u8 {
+        return self.0 + self.1 * 8;
+    }
     pub const N: Direction = Direction(0, 1); 
     pub const NE: Direction = Direction(1, 1); 
     pub const E: Direction = Direction(1, 0); 
@@ -82,6 +85,25 @@ impl BoardSquare {
             return None;
         }
         return Some(BoardSquare((new_x + new_y * 8) as u8));
+    }
+    pub const fn get_all_squares_in_direction(&self, dir: Direction) -> Vec<BoardSquare> {
+        let amount_of_squares = match dir {
+            Direction::N => self.y(), 
+            Direction::NE => cmp::min(7 - xpos, ypos),
+            Direction::E => 7 - self.x(), 
+            Direction::SE => 7 - cmp::max(xpos, ypos),
+            Direction::S => 7 - self.y(), 
+            Direction::SW => 7 - cmp::min(7 - xpos, ypos),
+            Direction::W => self.x(), 
+            Direction::NW => cmp::min(xpos, ypos),
+            _ => panic!("get_all_squares_in_direction only supports cardinal/ordinal directions")
+        };
+        let squares_in_direction = Vec::with_capacity(amount_of_squares);
+        for square_num in 1..=amount_of_squares {
+            let square_in_dir = self.pos() + ((dir.x() * square_num) + (dir.y() * square_num * 8));
+            squares_in_direction.push(square_in_dir);
+        }
+        return squares_in_direction;
     }
 }
 
@@ -300,7 +322,7 @@ impl Board {
                         Direction(2, -1),
                         Direction(-2, -1)
                     ];
-                    for move_direction in move_directions {
+                    for move_direction in move_directions.iter() {
                         let possible_reachable_square = origin_square.get_square_in_direction(
                             move_direction
                         );
@@ -316,7 +338,12 @@ impl Board {
                     }
                 },
                 BISHOP => {
-                    
+                    let move_directions = [
+                        Direction::NW,
+                        Direction::NE,
+                        Direction::SE,
+                        Direction::SW
+                    ]
                 },
                 ROOK => {
                     
