@@ -37,9 +37,9 @@ third part:
         abbb bcdd dddd eeee eeff ffff 0000 0000
     a describes turn
     bbbb describes castling rights:
-        (wk, wq, bk, bq)
+        (bk, bq, wk, wq)
     c describes if en passant is plausible
     dddddd describes en passant target square
-    eeeeee describes white king position (useful for checking pins)
-    ffffff describes black king position
+    eeeeee describes black king position (useful for checking pins)
+    ffffff describes white king position
 A game takes the form of (board: (u256, u32), halfmove: u8, threefold_check: HashMap)
