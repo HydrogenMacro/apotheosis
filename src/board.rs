@@ -144,7 +144,7 @@ impl BoardMove {
     pub const CASTLE_WK: BoardMove = BoardMove(0b1110_0000_0000_0000u16);
     
     #[inline]
-    pub fn new(origin_square: BoardSquare, dest_square: BoardSquare) -> BoardMove {
+    pub fn new(origin_square: &BoardSquare, dest_square: &BoardSquare) -> BoardMove {
         return BoardMove(
                 ((origin_square.pos() as u16) << 9) 
                 | ((dest_square.pos() as u16) << 3)
@@ -286,7 +286,7 @@ impl Board {
         return [BoardSquare(black_king_pos), BoardSquare(white_king_pos)];
     }
     #[inline]
-    pub fn get_piece_at(&self, square: BoardSquare) -> Option<Piece> {
+    pub fn get_piece_at(&self, square: &BoardSquare) -> Option<Piece> {
         let mask_distance_away = square.pos() * 4;
         let mask = U256::new(0b1111) << mask_distance_away;
         let square_contents = ((self.0 & mask) >> mask_distance_away).as_u8();
@@ -302,7 +302,7 @@ impl Board {
         
         for origin_square_pos in 0..64 {
             let origin_square = BoardSquare(origin_square_pos);
-            let possible_origin_piece = self.get_piece_at(origin_square);
+            let possible_origin_piece = self.get_piece_at(&origin_square);
             if let None = possible_origin_piece { continue; }
             let origin_piece = possible_origin_piece.unwrap();
             
@@ -317,8 +317,8 @@ impl Board {
                     let base_reachable_square = origin_square
                         .get_square_in_direction(&Direction(0, dir * 1))
                         .expect("this can only be invalid in invalid positions");
-                    if let None = self.get_piece_at(base_reachable_square) {
-                        valid_moves.push(BoardMove::new(origin_square, base_reachable_square));
+                    if let None = self.get_piece_at(&base_reachable_square) {
+                        valid_moves.push(BoardMove::new(&origin_square, &base_reachable_square));
                     }
                     
                     let is_on_home_square = origin_square.y() == 6 && is_white 
@@ -327,8 +327,8 @@ impl Board {
                         let extended_reachable_square = origin_square
                             .get_square_in_direction(&Direction(0, dir * 2))
                             .expect("cannot go oob when on home square");
-                        if let None = self.get_piece_at(extended_reachable_square) {
-                            valid_moves.push(BoardMove::new(origin_square, extended_reachable_square));
+                        if let None = self.get_piece_at(&extended_reachable_square) {
+                            valid_moves.push(BoardMove::new(&origin_square, &extended_reachable_square));
                         }
                     }
                     
@@ -341,7 +341,7 @@ impl Board {
                             if let Some(capturable_piece) = self.get_piece_at(capturable_square) {
                                 let capturable_piece_color = get_piece_color(capturable_piece);
                                 if origin_piece_color != capturable_piece_color {
-                                    valid_moves.push(BoardMove::new(origin_square, capturable_square));
+                                    valid_moves.push(BoardMove::new(&origin_square, &capturable_square));
                                 }
                             }
                         }
@@ -376,12 +376,12 @@ impl Board {
                             move_direction
                         );
                         if let Some(reachable_square) = possible_reachable_square {
-                            if let Some(reachable_piece) = self.get_piece_at(reachable_square) {
+                            if let Some(reachable_piece) = self.get_piece_at(&reachable_square) {
                                 if get_piece_color(reachable_piece) != origin_piece_color {
-                                    valid_moves.push(BoardMove::new(origin_square, reachable_square));
+                                    valid_moves.push(BoardMove::new(&origin_square, &reachable_square));
                                 }
                             } else {
-                                valid_moves.push(BoardMove::new(origin_square, reachable_square));
+                                valid_moves.push(BoardMove::new(&origin_square, &reachable_square));
                             }
                         }
                     }
@@ -418,13 +418,13 @@ impl Board {
                         let mut seen_pieces: Vec<Piece> = Vec::new();
                         for reachable_square in reachable_squares.into_iter() {
                             if can_still_move {
-                                if let Some(reachable_piece) = self.get_piece_at(reachable_square) {
+                                if let Some(reachable_piece) = self.get_piece_at(&reachable_square) {
                                     if get_piece_color(reachable_piece) != origin_piece_color {
-                                        valid_moves.push(BoardMove::new(origin_square, reachable_square));
+                                        valid_moves.push(BoardMove::new(&origin_square, &reachable_square));
                                     }
                                     can_still_move = false;
                                 } else {
-                                    valid_moves.push(BoardMove::new(origin_square, reachable_square));
+                                    valid_moves.push(BoardMove::new(&origin_square, &reachable_square));
                                 }
                             } else {
                                 // check king and pins
