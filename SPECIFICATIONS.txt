@@ -31,7 +31,7 @@ first/second part:
 		    100x - rook
 		    101x - queen
 		    110x - king
-		    x describes color
+		    x describes color (0 - black, 1 - white)
 third part:
     format:
         abbb bcdd dddd eeee eeff ffff 0000 0000
