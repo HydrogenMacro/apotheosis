@@ -338,7 +338,7 @@ impl Board {
                     ];
                     for possible_capturable_square in possible_capturable_squares {
                         if let Some(capturable_square) = possible_capturable_square {
-                            if let Some(capturable_piece) = self.get_piece_at(capturable_square) {
+                            if let Some(capturable_piece) = self.get_piece_at(&capturable_square) {
                                 let capturable_piece_color = get_piece_color(capturable_piece);
                                 if origin_piece_color != capturable_piece_color {
                                     valid_moves.push(BoardMove::new(&origin_square, &capturable_square));
