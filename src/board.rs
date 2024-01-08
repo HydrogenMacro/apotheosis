@@ -98,10 +98,10 @@ impl BoardSquare {
             Direction::NW => cmp::min(self.x(), self.y()),
             _ => panic!("get_all_squares_in_direction only supports cardinal/ordinal directions")
         };
-        let squares_in_direction = Vec::with_capacity(amount_of_squares);
+        let squares_in_direction = Vec::with_capacity(amount_of_squares as usize);
         for square_num in 1..=amount_of_squares {
-            let square_in_dir = self.pos() + ((dir.dx() * square_num) + (dir.dy() * square_num * 8));
-            squares_in_direction.push(square_in_dir);
+            let square_in_dir = (self.pos() as i8 + ((dir.dx() * square_num as i8) + (dir.dy() * square_num as i8 * 8))) as u8;
+            squares_in_direction.push(BoardSquare(square_in_dir));
         }
         return squares_in_direction;
     }
@@ -250,7 +250,7 @@ impl Board {
         return ((self.1 & mask) >> 21) as u8;
     }
     #[inline]
-    pub const fn castle_availibility(&self) -> [[bool, bool], [bool, bool]] {
+    pub const fn castle_availibility(&self) -> [(bool, bool); 2] {
         let mask = 0b1111u32 << 27;
         let bitflags = (self.1 & mask) >> 27;
         return [
