@@ -223,10 +223,10 @@ impl Board {
         let castle_availibility = fen_parts.next().unwrap();
         for castle_flag in castle_availibility.chars() {
             let castle_flag_mask = match castle_flag {
-                'K' => 1u32 << 30,
-                'Q' => 1u32 << 29,
-                'k' => 1u32 << 28,
-                'q' => 1u32 << 27,
+                'k' => 1u32 << 30,
+                'q' => 1u32 << 29,
+                'K' => 1u32 << 28,
+                'Q' => 1u32 << 27,
                 _ => 0
             };
             board_state |= castle_flag_mask;
@@ -239,15 +239,50 @@ impl Board {
             board_state |= (en_passant_target_square.pos() as u32) << 20;
         }
 
-        board_state |= (white_king_pos as u32) << 14;
-        board_state |= (black_king_pos as u32) << 8;        
+        board_state |= (black_king_pos as u32) << 14;
+        board_state |= (white_king_pos as u32) << 8;        
 
         return Board(board_image, board_state);
     }
     #[inline]
-    pub fn active_color(&self) -> Color {
-        let mask = 1u32 << 31u32;
-        return ((self.1 | mask) >> 31u32) as u8;
+    pub const fn active_color(&self) -> Color {
+        let mask = 1u32 << 31;
+        return ((self.1 & mask) >> 21) as u8;
+    }
+    #[inline]
+    pub const fn castle_availibility(&self) -> [[bool, bool], [bool, bool]] {
+        let mask = 0b1111u32 << 27;
+        let bitflags = (self.1 & mask) >> 27;
+        return [
+            [
+                (bitflags & 0b1000 >> 3) as bool,
+                (bitflags & 0b0100 >> 2) as bool
+            ],
+            [
+                (bitflags & 0b0010 >> 1) as bool,
+                (bitflags & 0b0001 >> 0) as bool
+            ]
+        ];
+    }
+    #[inline]
+    pub fn en_passant_target_square(&self) -> Option<BoardSquare> {
+        let flag_mask = 1u32 << 26;
+        let target_square_mask = 0b111111u32 << 20;
+        let target_square_exists = ((self.1 & flag_mask) >> 26) as bool;
+        if !target_square_exists {
+            return None;
+        }
+        let target_square = BoardSquare(((self.1 & target_square_mask) >> 20) as u8);
+        return Some(target_square);
+    }
+    #[inline]
+    pub fn squares_of_kings(&self) -> [BoardSquare, BoardSquare] {
+        let black_king_mask = 0b111111u32 << 14;
+        let black_king_pos = ((self.1 & white_king_mask) >> 14) as u8;
+        let white_king_mask = 0b111111u32 << 8;
+        let white_king_pos = ((self.1 & black_king_mask) >> 8) as u8;
+        
+        return [BoardSquare(black_king_pos), BoardSquare(white_king_pos)];
     }
     #[inline]
     pub fn get_piece_at(&self, square: BoardSquare) -> Option<Piece> {
