@@ -75,7 +75,7 @@ impl BoardSquare {
     pub const fn y(&self) -> u8 {
         return self.0 << 3;
     }
-    pub const fn get_square_in_direction(&self, dir: Direction) -> Option<BoardSquare> {
+    pub const fn get_square_in_direction(&self, dir: &Direction) -> Option<BoardSquare> {
         let new_x = self.x() as i8 + dir.dx();
         let new_y = self.y() as i8 + dir.dy();
         if new_x < 0 
@@ -86,7 +86,7 @@ impl BoardSquare {
         }
         return Some(BoardSquare((new_x + new_y * 8) as u8));
     }
-    pub fn get_all_squares_in_direction(&self, dir: Direction) -> Vec<BoardSquare> {
+    pub fn get_all_squares_in_direction(&self, dir: &Direction) -> Vec<BoardSquare> {
         let amount_of_squares = match dir {
             Direction::N => self.y(), 
             Direction::NE => cmp::min(7 - self.x(), self.y()),
@@ -278,9 +278,9 @@ impl Board {
     #[inline]
     pub fn squares_of_kings(&self) -> [BoardSquare; 2] {
         let black_king_mask = 0b111111u32 << 14;
-        let black_king_pos = ((self.1 & white_king_mask) >> 14) as u8;
+        let black_king_pos = ((self.1 & black_king_mask) >> 14) as u8;
         let white_king_mask = 0b111111u32 << 8;
-        let white_king_pos = ((self.1 & black_king_mask) >> 8) as u8;
+        let white_king_pos = ((self.1 & white_king_mask) >> 8) as u8;
         
         return [BoardSquare(black_king_pos), BoardSquare(white_king_pos)];
     }
@@ -305,12 +305,12 @@ impl Board {
             if let None = possible_origin_piece { continue; }
             let origin_piece = possible_origin_piece.unwrap();
             
-            let origin_color = get_piece_color(origin_piece);
+            let origin_piece_color = get_piece_color(origin_piece);
             let origin_piece_type = get_piece_type(origin_piece);
             
             match origin_piece_type {
                 PAWN => {
-                    let is_white = origin_color == WHITE;
+                    let is_white = origin_piece_color == WHITE;
                     let dir = if is_white { -1i8 } else { 1i8 };
                     
                     let base_reachable_square = origin_square
@@ -368,7 +368,7 @@ impl Board {
                             Direction::S,
                             Direction::W
                         ]
-                    }
+                    };
                     for move_direction in move_directions.into_iter() {
                         let possible_reachable_square = origin_square.get_square_in_direction(
                             move_direction
@@ -386,19 +386,19 @@ impl Board {
                 },
                 BISHOP | ROOK | QUEEN => {
                     let move_directions = match origin_piece_type {
-                        BISHOP => [
+                        BISHOP => &[
                             Direction::NW,
                             Direction::NE,
                             Direction::SE,
                             Direction::SW
                         ][..],
-                        ROOK => [
+                        ROOK => &[
                             Direction::N,
                             Direction::E,
                             Direction::S,
                             Direction::W
                         ][..],
-                        QUEEN => [
+                        QUEEN => &[
                             Direction::NW,
                             Direction::NE,
                             Direction::SE,
@@ -408,11 +408,11 @@ impl Board {
                             Direction::S,
                             Direction::W
                         ][..],
-                    }
+                    };
                     for move_direction in move_directions.into_iter() {
                         let reachable_squares = origin_square.get_all_squares_in_direction(move_direction);
                         let mut can_still_move = true;
-                        let mut seen_pieces: Vec<BoardPiece> = Vec::new();
+                        let mut seen_pieces: Vec<Piece> = Vec::new();
                         for reachable_square in reachable_squares.into_iter() {
                             if can_still_move {
                                 if let Some(reachable_piece) = self.get_piece_at(reachable_square) {
