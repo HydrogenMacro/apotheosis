@@ -254,21 +254,21 @@ impl Board {
         let mask = 0b1111u32 << 27;
         let bitflags = (self.1 & mask) >> 27;
         return [
-            [
-                (bitflags & 0b1000 >> 3) as bool,
-                (bitflags & 0b0100 >> 2) as bool
-            ],
-            [
-                (bitflags & 0b0010 >> 1) as bool,
-                (bitflags & 0b0001 >> 0) as bool
-            ]
+            (
+                bitflags & 0b1000 != 0,
+                bitflags & 0b0100 != 0
+            ),
+            (
+                bitflags & 0b0010 != 0,
+                bitflags & 0b0001 != 0
+            )
         ];
     }
     #[inline]
     pub fn en_passant_target_square(&self) -> Option<BoardSquare> {
         let flag_mask = 1u32 << 26;
         let target_square_mask = 0b111111u32 << 20;
-        let target_square_exists = ((self.1 & flag_mask) >> 26) as bool;
+        let target_square_exists = self.1 & flag_mask != 0;
         if !target_square_exists {
             return None;
         }
@@ -276,7 +276,7 @@ impl Board {
         return Some(target_square);
     }
     #[inline]
-    pub fn squares_of_kings(&self) -> [BoardSquare, BoardSquare] {
+    pub fn squares_of_kings(&self) -> [BoardSquare; 2] {
         let black_king_mask = 0b111111u32 << 14;
         let black_king_pos = ((self.1 & white_king_mask) >> 14) as u8;
         let white_king_mask = 0b111111u32 << 8;
