@@ -311,18 +311,30 @@ impl Board {
                         }
                     }
                 },
-                KNIGHT => {
-                    let move_directions = [
-                        Direction(1, 2),
-                        Direction(-1, 2),
-                        Direction(1, -2),
-                        Direction(-1, -2),
-                        Direction(2, 1),
-                        Direction(-2, 1),
-                        Direction(2, -1),
-                        Direction(-2, -1)
-                    ];
-                    for move_direction in move_directions.iter() {
+                KNIGHT | KING => {
+                    let move_directions = match origin_piece_type {
+                        BISHOP => [
+                            Direction(1, 2),
+                            Direction(-1, 2),
+                            Direction(1, -2),
+                            Direction(-1, -2),
+                            Direction(2, 1),
+                            Direction(-2, 1),
+                            Direction(2, -1),
+                            Direction(-2, -1)
+                        ],
+                        KING => [
+                            Direction::NW,
+                            Direction::NE,
+                            Direction::SE,
+                            Direction::SW,
+                            Direction::N,
+                            Direction::E,
+                            Direction::S,
+                            Direction::W
+                        ]
+                    }
+                    for move_direction in move_directions.into_iter() {
                         let possible_reachable_square = origin_square.get_square_in_direction(
                             move_direction
                         );
@@ -337,27 +349,55 @@ impl Board {
                         }
                     }
                 },
-                BISHOP => {
-                    let move_directions = [
-                        Direction::NW,
-                        Direction::NE,
-                        Direction::SE,
-                        Direction::SW
-                    ];
-                },
-                ROOK => {
-                    
-                },
-                QUEEN => {
-                    
-                },
-                KING => {
-                    
+                BISHOP | ROOK | QUEEN => {
+                    let move_directions = match origin_piece_type {
+                        BISHOP => [
+                            Direction::NW,
+                            Direction::NE,
+                            Direction::SE,
+                            Direction::SW
+                        ][..],
+                        ROOK => [
+                            Direction::N,
+                            Direction::E,
+                            Direction::S,
+                            Direction::W
+                        ][..],
+                        QUEEN => [
+                            Direction::NW,
+                            Direction::NE,
+                            Direction::SE,
+                            Direction::SW,
+                            Direction::N,
+                            Direction::E,
+                            Direction::S,
+                            Direction::W
+                        ][..],
+                    }
+                    for move_direction in move_directions.into_iter() {
+                        let reachable_squares = origin_square.get_all_squares_in_direction(move_direction);
+                        let mut can_still_move = true;
+                        let mut seen_pieces: Vec<BoardPiece> = Vec::new();
+                        for reachable_square in reachable_squares.into_iter() {
+                            if can_still_move {
+                                if let Some(reachable_piece) = self.get_piece_at(reachable_square) {
+                                    if get_piece_color(reachable_piece) != origin_piece_color {
+                                        valid_moves.push(BoardMove::new(origin_square, reachable_square));
+                                    }
+                                    can_still_move = false;
+                                } else {
+                                    valid_moves.push(BoardMove::new(origin_square, reachable_square));
+                                }
+                            } else {
+                                // check king and pins
+                            }
+                        }
+                    }
                 },
                 _ => {}
             }
         }
-        todo!();
+        return valid_moves
     }
 }
 //*
