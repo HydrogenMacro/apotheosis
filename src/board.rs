@@ -87,7 +87,7 @@ impl BoardSquare {
         return Some(BoardSquare((new_x + new_y * 8) as u8));
     }
     pub fn get_all_squares_in_direction(&self, dir: &Direction) -> Vec<BoardSquare> {
-        let amount_of_squares = match dir {
+        let amount_of_squares = match *dir {
             Direction::N => self.y(), 
             Direction::NE => cmp::min(7 - self.x(), self.y()),
             Direction::E => 7 - self.x(), 
@@ -314,7 +314,7 @@ impl Board {
                     let dir = if is_white { -1i8 } else { 1i8 };
                     
                     let base_reachable_square = origin_square
-                        .get_square_in_direction(Direction(0, dir * 1))
+                        .get_square_in_direction(&Direction(0, dir * 1))
                         .expect("this can only be invalid in invalid positions");
                     if let None = self.get_piece_at(base_reachable_square) {
                         valid_moves.push(BoardMove::new(origin_square, base_reachable_square));
@@ -324,7 +324,7 @@ impl Board {
                         || origin_square.y() == 1 && !is_white;
                     if is_on_home_square {
                         let extended_reachable_square = origin_square
-                            .get_square_in_direction(Direction(0, dir * 2))
+                            .get_square_in_direction(&Direction(0, dir * 2))
                             .expect("cannot go oob when on home square");
                         if let None = self.get_piece_at(extended_reachable_square) {
                             valid_moves.push(BoardMove::new(origin_square, extended_reachable_square));
@@ -332,8 +332,8 @@ impl Board {
                     }
                     
                     let possible_capturable_squares = [
-                        origin_square.get_square_in_direction(Direction(-1, dir * 1)),
-                        origin_square.get_square_in_direction(Direction(1, dir * 1))
+                        origin_square.get_square_in_direction(&Direction(-1, dir * 1)),
+                        origin_square.get_square_in_direction(&Direction(1, dir * 1))
                     ];
                     for possible_capturable_square in possible_capturable_squares {
                         if let Some(capturable_square) = possible_capturable_square {
