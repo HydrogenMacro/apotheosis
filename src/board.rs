@@ -5,7 +5,7 @@ use std::{
 };
 use ethnum::*;
 
-#[derive(PartialEq, PartialOrd, Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Debug)]
 pub struct Direction(i8, i8);
 impl Direction {
     #[inline]
@@ -16,6 +16,7 @@ impl Direction {
     pub const fn dy(&self) -> i8 {
         return self.1;
     }
+    #[inline]
     pub const fn as_square_pos_delta(&self) -> u8 {
         return (self.0 + self.1 * 8) as u8;
     }
@@ -98,7 +99,7 @@ impl BoardSquare {
             Direction::NW => cmp::min(self.x(), self.y()),
             _ => panic!("get_all_squares_in_direction only supports cardinal/ordinal directions")
         };
-        let squares_in_direction = Vec::with_capacity(amount_of_squares as usize);
+        let mut squares_in_direction = Vec::with_capacity(amount_of_squares as usize);
         for square_num in 1..=amount_of_squares {
             let square_in_dir = (self.pos() as i8 + ((dir.dx() * square_num as i8) + (dir.dy() * square_num as i8 * 8))) as u8;
             squares_in_direction.push(BoardSquare(square_in_dir));
@@ -367,7 +368,8 @@ impl Board {
                             Direction::E,
                             Direction::S,
                             Direction::W
-                        ]
+                        ],
+                        _ => unreachable!()
                     };
                     for move_direction in move_directions.into_iter() {
                         let possible_reachable_square = origin_square.get_square_in_direction(
@@ -408,6 +410,7 @@ impl Board {
                             Direction::S,
                             Direction::W
                         ][..],
+                        _ => unreachable!()
                     };
                     for move_direction in move_directions.into_iter() {
                         let reachable_squares = origin_square.get_all_squares_in_direction(move_direction);
