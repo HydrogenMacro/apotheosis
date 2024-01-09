@@ -1,4 +1,7 @@
-use apotheosis::board::Board;
+use apotheosis::board::{
+    Board,
+    *
+};
 use std::{
     collections::HashSet, 
     hash::Hash,
@@ -9,5 +12,7 @@ use std::{
 
 #[test]
 fn pawn_movement_test() {
-    assert!(true);
+    let b = Board::from_fem("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    let moves = b.get_valid_moves();
+    println!("{:?}", moves);
 }
