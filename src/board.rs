@@ -372,7 +372,7 @@ impl Board {
                         ],
                         _ => unreachable!()
                     };
-                    for move_direction in move_directions.into_iter() {
+                    for move_direction in move_directions {
                         let possible_reachable_square = origin_square.get_square_in_direction(
                             move_direction
                         );
@@ -419,6 +419,7 @@ impl Board {
                         let mut seen_pieces: Vec<Piece> = Vec::new();
                         for reachable_square in reachable_squares.into_iter() {
                             if can_still_move {
+                                println!("{:?}", reachable_square);
                                 if let Some(reachable_piece) = self.get_piece_at(&reachable_square) {
                                     if get_piece_color(reachable_piece) != origin_piece_color {
                                         valid_moves.push(BoardMove::new(&origin_square, &reachable_square));
