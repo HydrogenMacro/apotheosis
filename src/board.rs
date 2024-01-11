@@ -372,7 +372,7 @@ impl Board {
                         ],
                         _ => unreachable!()
                     };
-                    for move_direction in move_directions {
+                    for move_direction in move_directions.into_iter() {
                         let possible_reachable_square = origin_square.get_square_in_direction(
                             move_direction
                         );
