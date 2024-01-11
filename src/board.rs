@@ -104,6 +104,7 @@ impl BoardSquare {
             let square_in_dir = (self.pos() as i8 + ((dir.dx() * square_num as i8) + (dir.dy() * square_num as i8 * 8))) as u8;
             squares_in_direction.push(BoardSquare(square_in_dir));
         }
+        println!("squares in direction: {}, squares: {:?}", amount_of_squares, squares_in_direction);
         return squares_in_direction;
     }
 }
