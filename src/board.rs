@@ -101,7 +101,7 @@ impl BoardSquare {
         };
         let mut squares_in_direction = Vec::with_capacity(amount_of_squares as usize);
         for square_num in 1..=amount_of_squares {
-            let square_in_dir = (self.pos() as i8 + ((dir.dx() * square_num as i8) + (dir.dy() * square_num as i8 * 8))) as u8;
+            let square_in_dir = (self.pos() as i8 + ((dir.dx() * square_num as i8) + (dir.dy() * square_num as i8 * -8))) as u8;
             squares_in_direction.push(BoardSquare(square_in_dir));
         }
         println!("from: {:?}, in dir: {:?}, squares in direction: {}, squares: {:?}", self, dir, amount_of_squares, squares_in_direction);
