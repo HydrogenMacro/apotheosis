@@ -351,7 +351,7 @@ impl Board {
                 },
                 KNIGHT | KING => {
                     let move_directions = match origin_piece_type {
-                        BISHOP => [
+                        KNIGHT => [
                             Direction(1, 2),
                             Direction(-1, 2),
                             Direction(1, -2),
