@@ -1,7 +1,8 @@
 use std::{
     collections::HashSet,
     cmp,
-    default::Default
+    default::Default,
+    fmt
 };
 use ethnum::*;
 
@@ -31,7 +32,7 @@ impl Direction {
 }
 
 #[derive(PartialEq, PartialOrd, Debug)]
-pub struct BoardSquare(u8);
+pub struct BoardSquare(pub u8);
 impl BoardSquare {
     #[inline]
     pub const fn pos(&self) -> u8 {
@@ -41,8 +42,8 @@ impl BoardSquare {
         if board_square_notation.len() != 2 {
             panic!("BoardSquare::from takes a 2 lengthed string, like \"d3\"");
         }
-        if let [row, col] = board_square_notation.as_bytes() {
-            let row_value: u8 = match row {
+        if let [col, row] = board_square_notation.as_bytes() {
+            let col_value: u8 = match row {
                 b'a' => 0,
                 b'b' => 1,
                 b'c' => 2,
@@ -53,15 +54,15 @@ impl BoardSquare {
                 b'h' => 7,
                 _ => unreachable!()
             };
-            let col_value: u8 = match col {
-                b'a' => 0,
-                b'b' => 8,
-                b'c' => 16,
-                b'd' => 24,
-                b'e' => 32,
-                b'f' => 40,
-                b'g' => 48,
-                b'h' => 56,
+            let row_value: u8 = match col {
+                b'8' => 0,
+                b'7' => 8,
+                b'6' => 16,
+                b'5' => 24,
+                b'4' => 32,
+                b'3' => 40,
+                b'2' => 48,
+                b'1' => 56,
                 _ => unreachable!()
             };
             return BoardSquare(row_value + col_value);
@@ -99,14 +100,23 @@ impl BoardSquare {
             Direction::NW => cmp::min(self.x(), self.y()),
             _ => panic!("get_all_squares_in_direction only supports cardinal/ordinal directions")
         };
-        println!("line 90: self.x is {}, self.y is {}", self.x(), self.y());
         let mut squares_in_direction = Vec::with_capacity(amount_of_squares as usize);
         for square_num in 1..=amount_of_squares {
             let square_in_dir = (self.pos() as i8 + ((dir.dx() * square_num as i8) + (dir.dy() * square_num as i8 * -8))) as u8;
             squares_in_direction.push(BoardSquare(square_in_dir));
         }
-        println!("from: {:?}, in dir: {:?}, squares in direction: {}, squares: {:?}", self, dir, amount_of_squares, squares_in_direction);
         return squares_in_direction;
+    }
+}
+impl fmt::Display for BoardSquare {
+    let mut row_chars = "abcdefg".chars();
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        return write!(
+            f,
+            "{}{}", 
+            row_chars.nth(self.x() as usize).unwrap(), 
+            self.y() + 1
+        );
     }
 }
 
@@ -168,6 +178,14 @@ impl BoardMove {
         );
         // maybe just provide a mask
     }
+    #[inline]
+    pub const fn from_square(&self) -> BoardSquare {
+        return BoardSquare(((self.0 >> 9) & 0b111111) as u8);
+    }
+    #[inline]
+    pub const fn dest_square(&self) -> BoardSquare {
+        return BoardSquare(((self.0 >> 3) & 0b111111) as u8);
+    }
 }
 
 #[derive(PartialEq, Debug)]
@@ -181,8 +199,8 @@ impl Board {
         let mut board_state = 0u32;
 
         let mut current_board_image_pos = 0;
-        let mut white_king_pos: u8 = Default::default();
-        let mut black_king_pos: u8 = Default::default();
+        let mut white_king_pos = 0u8;
+        let mut black_king_pos = 0u8;
         for fen_board_char in fen_board.chars() {
             let possible_board_piece = match fen_board_char {
                 'p' => Some(BLACK | PAWN),
@@ -251,12 +269,12 @@ impl Board {
     #[inline]
     pub const fn active_color(&self) -> Color {
         let mask = 1u32 << 31;
-        return ((self.1 & mask) >> 21) as u8;
+        return ((self.1 >> 31) & mask) as u8;
     }
     #[inline]
     pub const fn castle_availibility(&self) -> [(bool, bool); 2] {
-        let mask = 0b1111u32 << 27;
-        let bitflags = (self.1 & mask) >> 27;
+        let mask = 0b1111u32;
+        let bitflags = (self.1 >> 27) & mask;
         return [
             (
                 bitflags & 0b1000 != 0,
@@ -281,10 +299,9 @@ impl Board {
     }
     #[inline]
     pub fn squares_of_kings(&self) -> [BoardSquare; 2] {
-        let black_king_mask = 0b111111u32 << 14;
-        let black_king_pos = ((self.1 & black_king_mask) >> 14) as u8;
-        let white_king_mask = 0b111111u32 << 8;
-        let white_king_pos = ((self.1 & white_king_mask) >> 8) as u8;
+        let mask = 0b111111u32;
+        let black_king_pos = ((self.1 >> 14) & mask) as u8;
+        let white_king_pos = ((self.1 >> 8) & mask) as u8;
         
         return [BoardSquare(black_king_pos), BoardSquare(white_king_pos)];
     }
