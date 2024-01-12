@@ -137,7 +137,7 @@ pub const fn get_piece_color(piece: Piece) -> PieceType {
 }
 
 #[derive(PartialEq, Debug)]
-pub struct BoardMove(u16);
+pub struct BoardMove(pub u16);
 
 impl BoardMove {
     pub const CASTLE_BQ: BoardMove = BoardMove(0b1000_0000_0000_0000u16);
