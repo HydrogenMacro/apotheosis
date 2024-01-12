@@ -109,8 +109,8 @@ impl BoardSquare {
     }
 }
 impl fmt::Display for BoardSquare {
-    let mut row_chars = "abcdefg".chars();
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut row_chars = "abcdefg".chars();
         return write!(
             f,
             "{}{}", 
