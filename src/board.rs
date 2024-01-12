@@ -466,7 +466,7 @@ impl fmt::Display for Board {
         for row in (0..64).step_by(8) {
             for col in 0..8 {
                 let board_square = U256::new((row + col) * 4);
-                let board_piece = ((self.0 >> board_square) & mask) as u8;
+                let board_piece = ((self.0 >> board_square) & mask).as_u8();
                 let board_piece_char = match board_piece {
                     BLACK | PAWN => 'p',
                     BLACK | KNIGHT => 'n',
