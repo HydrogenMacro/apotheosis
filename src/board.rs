@@ -212,7 +212,7 @@ impl Board {
                     black_king_pos = current_board_image_pos;
                     Some(BLACK | KING)
                 },
-                'P' => Some(WHITE | KING),
+                'P' => Some(WHITE | PAWN),
                 'N' => Some(WHITE | KNIGHT),
                 'B' => Some(WHITE | BISHOP),
                 'R' => Some(WHITE | ROOK),
