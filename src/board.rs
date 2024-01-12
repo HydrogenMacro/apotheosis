@@ -179,6 +179,10 @@ impl BoardMove {
         // maybe just provide a mask
     }
     #[inline]
+    pub const fn is_castle(&self) -> bool {
+        return (self.0 & 1) == 1;
+    }
+    #[inline]
     pub const fn from_square(&self) -> BoardSquare {
         return BoardSquare(((self.0 >> 9) & 0b111111) as u8);
     }
@@ -188,7 +192,7 @@ impl BoardMove {
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct Board(u256, u32);
 impl Board {
     pub fn from_fen(fen: &str) -> Board {
@@ -343,7 +347,6 @@ impl Board {
                     
                     let is_on_home_square = origin_square.y() == 6 && is_white 
                         || origin_square.y() == 1 && !is_white;
-                    println!("{} at ({}, {}) on home square: {}", origin_square, origin_square.x(), origin_square.y(), is_on_home_square);
                     if is_on_home_square {
                         let extended_reachable_square = origin_square
                             .get_square_in_direction(&Direction(0, dir * 2))
@@ -439,7 +442,6 @@ impl Board {
                         let mut seen_pieces: Vec<Piece> = Vec::new();
                         for reachable_square in reachable_squares.into_iter() {
                             if can_still_move {
-                                println!("{:?}", reachable_square);
                                 if let Some(reachable_piece) = self.get_piece_at(&reachable_square) {
                                     if get_piece_color(reachable_piece) != origin_piece_color {
                                         valid_moves.push(BoardMove::new(&origin_square, &reachable_square));
@@ -458,6 +460,17 @@ impl Board {
             }
         }
         return valid_moves
+    }
+    pub fn create_board_from_move(&self, board_move: &BoardMove) -> Board {
+        let mut new_board = self.clone();
+        if board_move.is_castle() {
+            let [castle_color, castle_side] = match board_move {
+                BoardMove::CASTLE_BQ => [1, 1],
+                _ => unreachable!()
+            };
+        }
+        // is not castle
+        todo!();
     }
 }
 impl fmt::Display for Board {
@@ -491,9 +504,3 @@ impl fmt::Display for Board {
     }
 }
 
-//*
-fn main() {
-    let b = Board::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    println!("{:?}", b);
-}
-//*/
