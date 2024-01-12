@@ -38,7 +38,7 @@ impl BoardSquare {
     pub const fn pos(&self) -> u8 {
         return self.0;
     }
-    pub const fn from(board_square_notation: &str) -> BoardSquare {
+    pub fn from(board_square_notation: &str) -> BoardSquare {
         if board_square_notation.len() != 2 {
             panic!("BoardSquare::from takes a 2 lengthed string, like \"d3\"");
         }
