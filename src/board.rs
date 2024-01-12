@@ -94,7 +94,7 @@ impl BoardSquare {
             Direction::E => 7 - self.x(), 
             Direction::SE => 7 - cmp::max(self.x(), self.y()),
             Direction::S => 7 - self.y(), 
-            Direction::SW => 7 - cmp::min(7 - self.x(), self.y()),
+            Direction::SW => 7 - cmp::max(7 - self.x(), self.y()),
             Direction::W => self.x(), 
             Direction::NW => cmp::min(self.x(), self.y()),
             _ => panic!("get_all_squares_in_direction only supports cardinal/ordinal directions")
