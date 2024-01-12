@@ -99,6 +99,7 @@ impl BoardSquare {
             Direction::NW => cmp::min(self.x(), self.y()),
             _ => panic!("get_all_squares_in_direction only supports cardinal/ordinal directions")
         };
+        println!("line 90: self.x is {}, self.y is {}", self.x(), self.y());
         let mut squares_in_direction = Vec::with_capacity(amount_of_squares as usize);
         for square_num in 1..=amount_of_squares {
             let square_in_dir = (self.pos() as i8 + ((dir.dx() * square_num as i8) + (dir.dy() * square_num as i8 * -8))) as u8;
@@ -243,7 +244,8 @@ impl Board {
 
         board_state |= (black_king_pos as u32) << 14;
         board_state |= (white_king_pos as u32) << 8;        
-
+        println!("FEN PARSED: Board img is {board_image:b}");
+        
         return Board(board_image, board_state);
     }
     #[inline]
@@ -289,7 +291,6 @@ impl Board {
     #[inline]
     pub fn get_piece_at(&self, square: &BoardSquare) -> Option<Piece> {
         let mask_distance_away = U256::from(square.pos()) * 4;
-        println!("mask dist is {}", mask_distance_away);
         let mask = U256::new(0b1111) << mask_distance_away;
         let square_contents = ((self.0 & mask) >> mask_distance_away).as_u8();
         if !is_piece(square_contents) {
