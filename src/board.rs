@@ -468,18 +468,18 @@ impl fmt::Display for Board {
                 let board_square = U256::new((row + col) * 4);
                 let board_piece = ((self.0 >> board_square) & mask).as_u8();
                 let board_piece_char = match board_piece {
-                    BLACK | PAWN => 'p',
-                    BLACK | KNIGHT => 'n',
-                    BLACK | BISHOP => 'b',
-                    BLACK | ROOK => 'r',
-                    BLACK | QUEEN => 'q',
-                    BLACK | KING => 'k',
-                    WHITE | PAWN => 'P',
-                    WHITE | KNIGHT => 'N',
-                    WHITE | BISHOP => 'B',
-                    WHITE | ROOK => 'R',
-                    WHITE | QUEEN => 'Q',
-                    WHITE | KING => 'K',
+                    BLACK.bitor(PAWN) => 'p',
+                    BLACK.bitor(KNIGHT) => 'n',
+                    BLACK.bitor(BISHOP) => 'b',
+                    BLACK.bitor(ROOK) => 'r',
+                    BLACK.bitor(QUEEN) => 'q',
+                    BLACK.bitor(KING) => 'k',
+                    WHITE.bitor(PAWN) => 'P',
+                    WHITE.bitor(KNIGHT) => 'N',
+                    WHITE.bitor(BISHOP) => 'B',
+                    WHITE.bitor(ROOK) => 'R',
+                    WHITE.bitor(QUEEN) => 'Q',
+                    WHITE.bitor(KING) => 'K',
                     _ => ' '
                 };
                 s.push(board_piece_char);
