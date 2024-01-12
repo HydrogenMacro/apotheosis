@@ -459,6 +459,37 @@ impl Board {
         return valid_moves
     }
 }
+impl fmt::Display for Board {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut s = String::with_capacity(64 + 8);
+        let mask = U256::new(0b1111);
+        for row in (0..64).step_by(8) {
+            for col in 0..8 {
+                let board_square = U256::new((row + col) * 4);
+                let board_piece = (self.0 >> board_square) & mask;
+                let board_piece_char = match board_piece {
+                    BLACK | PAWN => 'p',
+                    BLACK | KNIGHT => 'n',
+                    BLACK | BISHOP => 'b',
+                    BLACK | ROOK => 'r',
+                    BLACK | QUEEN => 'q',
+                    BLACK | KING => 'k',
+                    WHITE | PAWN => 'P',
+                    WHITE | KNIGHT => 'N',
+                    WHITE | BISHOP => 'B',
+                    WHITE | ROOK => 'R',
+                    WHITE | QUEEN => 'Q',
+                    WHITE | KING => 'K',
+                    _ => ' '
+                };
+                s.push(board_piece_char);
+            }
+            s.push('\n');
+        }
+        return write!(f, "{}", s);
+    }
+}
+
 //*
 fn main() {
     let b = Board::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
