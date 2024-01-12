@@ -74,7 +74,7 @@ impl BoardSquare {
     }
     #[inline]
     pub const fn y(&self) -> u8 {
-        return self.0 << 3;
+        return self.0 >> 3;
     }
     pub const fn get_square_in_direction(&self, dir: &Direction) -> Option<BoardSquare> {
         let new_x = self.x() as i8 + dir.dx();
