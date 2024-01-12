@@ -67,7 +67,7 @@ impl BoardSquare {
             };
             return BoardSquare(row_value + col_value);
         }
-        panic!("BoardSquare::from() failed");
+        panic!("BoardSquare::from() failed for {}", board_square_notation);
     }
     #[inline]
     pub const fn x(&self) -> u8 {
@@ -343,6 +343,7 @@ impl Board {
                     
                     let is_on_home_square = origin_square.y() == 6 && is_white 
                         || origin_square.y() == 1 && !is_white;
+                    println!("{} at ({}, {}) on home square: {}", origin_square, origin_square.x(), origin_square.y(), is_on_home_square);
                     if is_on_home_square {
                         let extended_reachable_square = origin_square
                             .get_square_in_direction(&Direction(0, dir * 2))
