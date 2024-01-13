@@ -199,7 +199,7 @@ impl Board {
         let mut fen_parts = fen.split_whitespace();
         
         let fen_board = fen_parts.next().unwrap();
-        let mut board_image = U256::new(0);
+        let mut board_image = U256::from(0);
         let mut board_state = 0u32;
 
         let mut current_board_image_pos = 0;
@@ -312,7 +312,7 @@ impl Board {
     #[inline]
     pub fn get_piece_at(&self, square: &BoardSquare) -> Option<Piece> {
         let mask_distance_away = U256::from(square.pos()) * 4;
-        let mask = U256::new(0b1111) << mask_distance_away;
+        let mask = U256::from(0b1111) << mask_distance_away;
         let square_contents = ((self.0 & mask) >> mask_distance_away).as_u8();
         if !is_piece(square_contents) {
             return None;
@@ -464,22 +464,36 @@ impl Board {
     pub fn create_board_from_move(&self, board_move: &BoardMove) -> Board {
         let mut new_board = self.clone();
         if board_move.is_castle() {
-            let [castle_color, castle_side] = match board_move {
+            let [castle_color, castle_side] = match *board_move {
                 BoardMove::CASTLE_BQ => [1, 1],
+                
                 _ => unreachable!()
             };
+            todo!();
         }
         // is not castle
-        todo!();
+        let from_square = board_move.from_square();
+        let dest_square = board_move.dest_square();
+        let mask = U256::from(0b1111);
+        let from_piece = (self.0 >> U256::from(from_square * 4)).as_u8() & mask;
+        let _dest_piece = (self.0 >> U256::from(from_square * 4)).as_u8() & mask;
+        
+        // clear from_square and dest_square
+        new_board.0 &= !(mask << U256::from(from_square * 4));
+        new_board.0 &= !(mask << U256::from(dest_square * 4));
+        
+        // set dest_square
+        new_board.0 |= from_piece << dest_square * 4;
+        return new_board;
     }
 }
 impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut s = String::with_capacity(64 + 8);
-        let mask = U256::new(0b1111);
+        let mask = U256::from(0b1111);
         for row in (0..64).step_by(8) {
             for col in 0..8 {
-                let board_square = U256::new((row + col) * 4);
+                let board_square = U256::from((row + col) * 4);
                 let board_piece = ((self.0 >> board_square) & mask).as_u8();
                 let board_piece_char = match board_piece {
                     _ if board_piece == BLACK | PAWN => 'p',
