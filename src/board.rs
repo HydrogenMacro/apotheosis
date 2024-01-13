@@ -332,7 +332,9 @@ impl Board {
             
             let origin_piece_color = get_piece_color(origin_piece);
             let origin_piece_type = get_piece_type(origin_piece);
-            
+            if origin_piece_color != self.active_color() {
+                continue;
+            }
             match origin_piece_type {
                 PAWN => {
                     let is_white = origin_piece_color == WHITE;
@@ -483,7 +485,7 @@ impl Board {
         new_board.0 &= !(mask << U256::from(dest_square_pos * 4));
         
         // set dest_square
-        new_board.0 |= from_piece << dest_square_pos * 4;
+        new_board.0 |= U256::from(from_piece << dest_square_pos * 4);
         return new_board;
     }
 }
