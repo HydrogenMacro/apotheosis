@@ -476,7 +476,7 @@ impl Board {
         // is not castle
         let from_square_pos = board_move.from_square().pos();
         let dest_square_pos = board_move.dest_square().pos();
-        let mask = U256::from(0b1111);
+        let mask = U256::new(0b1111);
         let from_piece = ((self.0 >> U256::from(from_square_pos * 4)) & mask).as_u8();
         let _dest_piece = ((self.0 >> U256::from(from_square_pos * 4)) & mask).as_u8();
         
