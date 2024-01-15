@@ -212,7 +212,7 @@ impl Board {
         let mut board_image = U256::new(0);
         let mut board_state = 0u32;
 
-        let mut current_board_image_pos = 63u8;
+        let mut current_board_image_pos = 64u8;
         let mut white_king_pos = 0u8;
         let mut black_king_pos = 0u8;
         for fen_board_char in fen_board.chars() {
@@ -246,8 +246,8 @@ impl Board {
                 _ => None
             };
             if let Some(board_piece) = possible_board_piece {
-                board_image |= U256::from(board_piece) << U256::from(current_board_image_pos);
                 current_board_image_pos -= 1;
+                board_image |= U256::from(board_piece) << U256::from(current_board_image_pos);
             }
         }
         assert_eq!(current_board_image_pos, 0);
