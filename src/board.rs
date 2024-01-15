@@ -31,7 +31,7 @@ impl Direction {
     pub const NW: Direction = Direction(-1, 1); 
 }
 
-#[derive(PartialEq, PartialOrd, Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Debug)]
 pub struct BoardSquare(pub u8);
 impl BoardSquare {
     #[inline]
@@ -146,7 +146,7 @@ pub const fn get_piece_color(piece: Piece) -> PieceType {
     return piece & 0b0001;
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Eq, Debug)]
 pub struct BoardMove(pub u16);
 
 impl BoardMove {
