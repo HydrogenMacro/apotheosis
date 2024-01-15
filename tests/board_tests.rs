@@ -15,6 +15,7 @@ fn movement_tests() {
     let pawn_test_board = Board::from_fen(
         "8/8/8/8/8/2n5/1P6/8 w - - 0 1"
     );
+    println!("pawn board:\n{}", pawn_test_board);
     let pawn_test_board_valid_moves = vec![
         boardmove("b2", "b3"),
         boardmove("b2", "c3"),
