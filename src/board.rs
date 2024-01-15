@@ -213,9 +213,9 @@ impl Board {
         let mut board_state = 0u32;
 
         let mut current_board_image_pos = 0u8;
-        let mut white_king_pos = 0u8;
-        let mut black_king_pos = 0u8;
+        
         for fen_board_char in fen_board.chars() {
+            println!("char {} at pos {}", fen_board_char, current_board_image_pos);
             let possible_board_piece = match fen_board_char {
                 'p' => Some(BLACK | PAWN),
                 'n' => Some(BLACK | KNIGHT),
@@ -263,7 +263,7 @@ impl Board {
                 'q' => 1u32 << 29,
                 'K' => 1u32 << 28,
                 'Q' => 1u32 << 27,
-                _ => 0
+                '-' | _ => 0
             };
             board_state |= castle_flag_mask;
         }
@@ -275,11 +275,7 @@ impl Board {
             board_state |= (en_passant_target_square.pos() as u32) << 20;
         }
 
-        board_state |= (black_king_pos as u32) << 14;
-        board_state |= (white_king_pos as u32) << 8;        
-        
         let board = Board(board_image, board_state);
-        println!("{}", board);
         return board;
     }
     #[inline]
