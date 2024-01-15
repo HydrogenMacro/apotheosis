@@ -15,15 +15,19 @@ fn movement_tests() {
     let pawn_test_board = Board::from_fen(
         "8/8/8/8/8/2n5/1P6/8 w - - 0 1"
     );
-    let pawn_test_board_moves = vec![
+    let pawn_test_board_valid_moves = vec![
         boardmove("b2", "b3"),
         boardmove("b2", "c3"),
         boardmove("b2", "b4")
     ];
+    let pawn_test_board_found_moves = pawn_test_board.get_valid_moves();
+    for m in pawn_test_board_found_moves {
+        println!("{}", m);
+    }
     assert_eq!(
-        pawn_test_board.get_valid_moves(), 
-        pawn_test_board_moves
-    )
+        pawn_test_board_found_moves, 
+        pawn_test_board_valid_moves
+    );
 }
 
 fn boardmove(s1: &str, s2: &str) -> BoardMove {
