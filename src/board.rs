@@ -209,10 +209,10 @@ impl Board {
         let mut fen_parts = fen.split_whitespace();
         
         let fen_board = fen_parts.next().unwrap();
-        let mut board_image = U256::new(0);
+        let mut board_image = U256::new(255);
         let mut board_state = 0u32;
 
-        let mut current_board_image_pos = 63;
+        let mut current_board_image_pos = U256::new(252);
         let mut white_king_pos = 0u8;
         let mut black_king_pos = 0u8;
         for fen_board_char in fen_board.chars() {
@@ -235,21 +235,22 @@ impl Board {
                     white_king_pos = current_board_image_pos;
                     Some(WHITE | KING)
                 },
-                '1' => { current_board_image_pos += 1; None },
-                '2' => { current_board_image_pos += 2; None },
-                '3' => { current_board_image_pos += 3; None },
-                '4' => { current_board_image_pos += 4; None },
-                '5' => { current_board_image_pos += 5; None },
-                '6' => { current_board_image_pos += 6; None },
-                '7' => { current_board_image_pos += 7; None },
-                '8' => { current_board_image_pos += 8; None },
+                '1' => { current_board_image_pos -= 4; None },
+                '2' => { current_board_image_pos -= 8; None },
+                '3' => { current_board_image_pos -= 12; None },
+                '4' => { current_board_image_pos -= 16; None },
+                '5' => { current_board_image_pos -= 20; None },
+                '6' => { current_board_image_pos -= 24; None },
+                '7' => { current_board_image_pos -= 28; None },
+                '8' => { current_board_image_pos -= 32; None },
                 _ => None
             };
             if let Some(board_piece) = possible_board_piece {
-                board_image |= U256::from(board_piece) << (current_board_image_pos * 4);
-                current_board_image_pos -= 1;
+                board_image |= U256::from(board_piece) << current_board_image_pos;
+                current_board_image_pos -= U256::from(4);
             }
         }
+        assert_eq!(current_board_image_pos, U256::ZERO);
 
         let active_color = fen_parts.next().unwrap();
         let active_color_bit_flag_mask = if active_color == "w" { 1u32 << 31u32 } else { 0u32 };
