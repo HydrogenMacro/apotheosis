@@ -212,7 +212,7 @@ impl Board {
         let mut board_image = U256::new(0);
         let mut board_state = 0u32;
 
-        let mut current_board_image_pos = 0;
+        let mut current_board_image_pos = 63;
         let mut white_king_pos = 0u8;
         let mut black_king_pos = 0u8;
         for fen_board_char in fen_board.chars() {
@@ -247,7 +247,7 @@ impl Board {
             };
             if let Some(board_piece) = possible_board_piece {
                 board_image |= U256::from(board_piece) << (current_board_image_pos * 4);
-                current_board_image_pos += 1;
+                current_board_image_pos -= 1;
             }
         }
 
@@ -276,13 +276,13 @@ impl Board {
 
         board_state |= (black_king_pos as u32) << 14;
         board_state |= (white_king_pos as u32) << 8;        
-        println!("FEN PARSED: Board img is {board_image:b}");
+        println!("FEN PARSED: Board img is {board_image}");
         
         return Board(board_image, board_state);
     }
     #[inline]
     pub const fn active_color(&self) -> Color {
-        let mask = 1u32 << 31;
+        let mask = 1u32;
         return ((self.1 >> 31) & mask) as u8;
     }
     #[inline]
@@ -302,13 +302,13 @@ impl Board {
     }
     #[inline]
     pub fn en_passant_target_square(&self) -> Option<BoardSquare> {
-        let flag_mask = 1u32 << 26;
-        let target_square_mask = 0b111111u32 << 20;
-        let target_square_exists = self.1 & flag_mask != 0;
+        let flag_mask = 1u32;
+        let target_square_mask = 0b111111u32;
+        let target_square_exists = (self.1 >> 26) & flag_mask != 0;
         if !target_square_exists {
             return None;
         }
-        let target_square = BoardSquare(((self.1 & target_square_mask) >> 20) as u8);
+        let target_square = BoardSquare(((self.1 >> 20 ) & target_square_mask) as u8);
         return Some(target_square);
     }
     #[inline]
