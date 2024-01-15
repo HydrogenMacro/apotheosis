@@ -21,7 +21,7 @@ fn movement_tests() {
         boardmove("b2", "b4")
     ];
     let pawn_test_board_found_moves = pawn_test_board.get_valid_moves();
-    for m in pawn_test_board_found_moves {
+    for m in pawn_test_board_found_moves.iter() {
         println!("{}", m);
     }
     assert_eq!(
