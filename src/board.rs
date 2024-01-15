@@ -43,8 +43,7 @@ impl BoardSquare {
             panic!("BoardSquare::from takes a 2 lengthed string, like \"d3\"");
         }
         if let [col, row] = board_square_notation.as_bytes() {
-            println!("{} == {}", col, b'b');
-            let col_value: u8 = match row {
+            let col_value: u8 = match col {
                 b'a' => 0,
                 b'b' => 1,
                 b'c' => 2,
@@ -55,7 +54,7 @@ impl BoardSquare {
                 b'h' => 7,
                 _ => unreachable!()
             };
-            let row_value: u8 = match col {
+            let row_value: u8 = match row {
                 b'8' => 0,
                 b'7' => 8,
                 b'6' => 16,
