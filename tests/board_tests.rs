@@ -11,13 +11,21 @@ use std::{
 };
 
 #[test]
-fn pawn_movement_test() {
-    let b = Board::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    println!("{}", b);
-    let moves = b.get_valid_moves();
-    moves
-        .into_iter()
-        .for_each(|m| {
-            println!("move from {} to {}", m.from_square(), m.dest_square())
-        });
+fn movement_tests() {
+    let pawn_test_board = Board::from_fen(
+        "8/8/8/8/8/2n5/1P6/8 w - - 0 1"
+    );
+    let pawn_test_board_moves = vec![
+        boardmove("b2", "b3"),
+        boardmove("b2", "c3"),
+        boardmove("b2", "b4")
+    ];
+    assert_eq!(
+        pawn_test_board.get_valid_moves(), 
+        pawn_test_board_moves
+    )
+}
+
+fn boardmove(s1: &str, s2: &str) -> BoardMove {
+    return BoardMove::new(&BoardSquare::from(s1), &BoardSquare::from(s2));
 }
