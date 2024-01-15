@@ -276,9 +276,10 @@ impl Board {
 
         board_state |= (black_king_pos as u32) << 14;
         board_state |= (white_king_pos as u32) << 8;        
-        println!("FEN PARSED: Board img is {board_image}");
         
-        return Board(board_image, board_state);
+        let board = Board(board_image, board_state);
+        println!("{}", board);
+        return board;
     }
     #[inline]
     pub const fn active_color(&self) -> Color {
