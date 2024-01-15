@@ -191,6 +191,16 @@ impl BoardMove {
         return BoardSquare(((self.0 >> 3) & 0b111111) as u8);
     }
 }
+impl fmt::Display for BoardMove {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        return write!(
+            f,
+            "{} => {}",
+            self.from_square(),
+            self.dest_square()
+        );
+    }
+}
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Board(u256, u32);
