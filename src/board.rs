@@ -222,19 +222,13 @@ impl Board {
                 'b' => Some(BLACK | BISHOP),
                 'r' => Some(BLACK | ROOK),
                 'q' => Some(BLACK | QUEEN),
-                'k' => {
-                    black_king_pos = current_board_image_pos;
-                    Some(BLACK | KING)
-                },
+                'k' => Some(BLACK | KING),
                 'P' => Some(WHITE | PAWN),
                 'N' => Some(WHITE | KNIGHT),
                 'B' => Some(WHITE | BISHOP),
                 'R' => Some(WHITE | ROOK),
                 'Q' => Some(WHITE | QUEEN),
-                'K' => {
-                    white_king_pos = current_board_image_pos;
-                    Some(WHITE | KING)
-                },
+                'K' => Some(WHITE | KING),
                 '1' => { current_board_image_pos += 1; None },
                 '2' => { current_board_image_pos += 2; None },
                 '3' => { current_board_image_pos += 3; None },
