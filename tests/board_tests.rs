@@ -25,7 +25,7 @@ fn movement_tests() {
     for m in pawn_test_board_found_moves.iter() {
         println!("{}", m);
     }
-    assert_eq!(
+    assert_eq_lists(
         pawn_test_board_found_moves, 
         pawn_test_board_valid_moves
     );
@@ -33,4 +33,20 @@ fn movement_tests() {
 
 fn boardmove(s1: &str, s2: &str) -> BoardMove {
     return BoardMove::new(&BoardSquare::from(s1), &BoardSquare::from(s2));
+}
+fn assert_eq_lists<T>(a: &[T], b: &[T])
+where
+    T: PartialEq + Ord
+{
+    let mut a: Vec<_> = a.iter().collect();
+    let mut b: Vec<_> = b.iter().collect();
+    a.sort();
+    b.sort();
+
+    if a != b {
+        panic!("{} is not a permutation of {}", display_vec(a), display_vec(b));
+    }
+}
+fn display_vec() -> String {
+    return format!("[{}]", v2.iter().fold(String::new(), |acc, &num| acc + &num.to_string() + ", "));
 }
