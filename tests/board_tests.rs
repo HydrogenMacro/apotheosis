@@ -48,5 +48,5 @@ where
     }
 }
 fn display_vec<T: PartialEq + Ord + fmt::Display>(vec: Vec<T>) -> String {
-    return format!("[{}]", vec.iter().fold(String::new(), |acc, &num| acc + &num.to_string() + ", "));
+    return format!("[{}]", vec.iter().fold(String::new(), |acc, num| acc + &num.to_string() + ", "));
 }
