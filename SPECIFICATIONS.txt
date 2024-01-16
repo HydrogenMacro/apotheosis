@@ -34,12 +34,12 @@ first/second part:
 		    x describes color (0 - black, 1 - white)
 third part:
     format:
-        abbb bcdd dddd eeee eeff ffff 0000 0000
+        abbb bcdd dddd 0000 0000 0000 0000 0000
     a describes turn
     bbbb describes castling rights:
         (bk, bq, wk, wq)
     c describes if en passant is plausible
     dddddd describes en passant target square
-    eeeeee describes black king position (useful for checking pins)
-    ffffff describes white king position
+		# this is not u16 yet in case extra metadata is needed
+
 A game takes the form of (board: (u256, u32), halfmove: u8, threefold_check: HashMap)
