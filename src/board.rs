@@ -240,7 +240,7 @@ impl Board {
                 _ => None
             };
             if let Some(board_piece) = possible_board_piece {
-                board_image |= U256::from(board_piece) << U256::from(current_board_image_pos);
+                board_image |= U256::from(board_piece) << U256::from(current_board_image_pos as u32 * 4);
                 current_board_image_pos += 1;
             }
         }
