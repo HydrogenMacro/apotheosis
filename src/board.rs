@@ -115,7 +115,7 @@ impl fmt::Display for BoardSquare {
             f,
             "{}{}", 
             row_chars.nth(self.x() as usize).unwrap(), 
-            9 - self.y()
+            8 - self.y()
         );
     }
 }
