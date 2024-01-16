@@ -36,7 +36,7 @@ fn boardmove(s1: &str, s2: &str) -> BoardMove {
 }
 fn assert_eq_lists<T>(a: &[T], b: &[T])
 where
-    T: PartialEq + Ord
+    T: PartialEq + Ord + fmt::Display
 {
     let mut a: Vec<_> = a.iter().collect();
     let mut b: Vec<_> = b.iter().collect();
