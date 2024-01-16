@@ -215,7 +215,6 @@ impl Board {
         let mut current_board_image_pos = 0u8;
         
         for fen_board_char in fen_board.chars() {
-            println!("char {} at pos {}", fen_board_char, current_board_image_pos);
             let possible_board_piece = match fen_board_char {
                 'p' => Some(BLACK | PAWN),
                 'n' => Some(BLACK | KNIGHT),
