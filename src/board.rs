@@ -107,6 +107,10 @@ impl BoardSquare {
         }
         return squares_in_direction;
     }
+    #[inline]
+    pub const fn distance_from(&self, target_square: &BoardSquare) -> u8 {
+        return cmp::max((self.x() as i8 - target_square.x() as i8).abs(), (self.y() as i8 - target_square.y() as i8).abs()) as u8;
+    }
 }
 impl fmt::Display for BoardSquare {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
