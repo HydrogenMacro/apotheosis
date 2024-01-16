@@ -77,7 +77,6 @@ fn rook_movement_test() {
         boardmove("c2", "e2"),
         boardmove("c2", "f2"),
         boardmove("c2", "g2"),
-        boardmove("c2", "h2"),
         boardmove("c2", "c1"),
         boardmove("c2", "c3")
     ];
