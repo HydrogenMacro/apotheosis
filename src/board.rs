@@ -6,7 +6,7 @@ use std::{
 };
 use ethnum::*;
 
-#[derive(PartialEq, Eq, PartialOrd, Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub struct Direction(i8, i8);
 impl Direction {
     #[inline]
@@ -31,7 +31,7 @@ impl Direction {
     pub const NW: Direction = Direction(-1, 1); 
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub struct BoardSquare(pub u8);
 impl BoardSquare {
     #[inline]
@@ -146,7 +146,7 @@ pub const fn get_piece_color(piece: Piece) -> PieceType {
     return piece & 0b0001;
 }
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub struct BoardMove(pub u16);
 
 impl BoardMove {
@@ -202,7 +202,7 @@ impl fmt::Display for BoardMove {
     }
 }
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Clone)]
 pub struct Board(u256, u32);
 impl Board {
     pub fn from_fen(fen: &str) -> Board {
