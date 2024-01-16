@@ -7,7 +7,7 @@ use std::{
     hash::Hash,
     iter::FromIterator,
     clone::Clone,
-    fmt::Debug
+    fmt
 };
 
 #[test]
@@ -26,8 +26,8 @@ fn movement_tests() {
         println!("{}", m);
     }
     assert_eq_lists(
-        pawn_test_board_found_moves, 
-        pawn_test_board_valid_moves
+        &pawn_test_board_found_moves, 
+        &pawn_test_board_valid_moves
     );
 }
 
@@ -47,6 +47,6 @@ where
         panic!("{} is not a permutation of {}", display_vec(a), display_vec(b));
     }
 }
-fn display_vec() -> String {
-    return format!("[{}]", v2.iter().fold(String::new(), |acc, &num| acc + &num.to_string() + ", "));
+fn display_vec<T: fmt::Display>(vec: Vec<T>) -> String {
+    return format!("[{}]", vec.iter().fold(String::new(), |acc, &num| acc + &num.to_string() + ", "));
 }
