@@ -107,8 +107,10 @@ impl BoardSquare {
         }
         return squares_in_direction;
     }
+    
     #[inline]
-    pub const fn distance_from(&self, target_square: &BoardSquare) -> u8 {
+    pub fn distance_from(&self, target_square: &BoardSquare) -> u8 {
+        // this function should be const; however, cmp::max isn't
         return cmp::max((self.x() as i8 - target_square.x() as i8).abs(), (self.y() as i8 - target_square.y() as i8).abs()) as u8;
     }
 }
