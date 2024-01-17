@@ -208,6 +208,13 @@ impl fmt::Display for BoardMove {
     }
 }
 
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
+pub struct BoardState {
+    valid_moves: Vec<BoardMove>,
+    board_pieces: [Vec<BoardSquare>; 2],
+    defense_info: [i32; 64],
+    pos: i32
+}
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Clone)]
 pub struct Board(u256, u32);
 impl Board {
