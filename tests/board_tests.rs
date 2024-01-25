@@ -20,7 +20,7 @@ fn pawn_movement_test() {
         boardmove("b2", "c3"),
         boardmove("b2", "b4")
     ];
-    let test_board_found_moves = test_board.get_valid_moves();
+    let test_board_found_moves = test_board.get_board_info().valid_moves;
     assert_eq_lists(
         &test_board_found_moves, 
         &test_board_valid_moves
@@ -37,7 +37,7 @@ fn knight_movement_test() {
         boardmove("b2", "d3"),
         boardmove("b2", "d1")
     ];
-    let test_board_found_moves = test_board.get_valid_moves();
+    let test_board_found_moves = test_board.get_board_info().valid_moves;
     assert_eq_lists(
         &test_board_found_moves, 
         &test_board_valid_moves
@@ -58,7 +58,7 @@ fn bishop_movement_test() {
         boardmove("d3", "c4"),
         boardmove("d3", "e2")
     ];
-    let test_board_found_moves = test_board.get_valid_moves();
+    let test_board_found_moves = test_board.get_board_info().valid_moves;
     assert_eq_lists(
         &test_board_found_moves, 
         &test_board_valid_moves
@@ -80,7 +80,7 @@ fn rook_movement_test() {
         boardmove("c2", "c1"),
         boardmove("c2", "c3")
     ];
-    let test_board_found_moves = test_board.get_valid_moves();
+    let test_board_found_moves = test_board.get_board_info().valid_moves;
     assert_eq_lists(
         &test_board_found_moves, 
         &test_board_valid_moves
@@ -107,7 +107,7 @@ fn queen_movement_test() {
         boardmove("b2", "f2"),
         boardmove("b2", "d4")
     ];
-    let test_board_found_moves = test_board.get_valid_moves();
+    let test_board_found_moves = test_board.get_board_info().valid_moves;
     assert_eq_lists(
         &test_board_found_moves, 
         &test_board_valid_moves
@@ -128,7 +128,7 @@ fn king_movement_test() {
         boardmove("b2", "b3"),
         boardmove("b2", "c3"),
     ];
-    let test_board_found_moves = test_board.get_valid_moves();
+    let test_board_found_moves = test_board.get_board_info().valid_moves;
     assert_eq_lists(
         &test_board_found_moves, 
         &test_board_valid_moves
