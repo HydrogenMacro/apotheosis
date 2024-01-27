@@ -347,7 +347,7 @@ impl Board {
     pub fn get_board_info(&self) -> BoardInfo {
         let mut valid_moves: [Vec<BoardMove>; 2] = [Vec::new(), Vec::new()];
         let mut board_pieces = self.get_pieces();
-        let mut square_control: [BoardSquareInfo; 64] = <dyn Default>::defualt();
+        let mut square_control: [BoardSquareInfo; 64] = <dyn Default>::default();
 
         let mut pinned_pieces: [IntMap<u8, Direction>; 2] = [IntMap::default(), IntMap::default()];
         for king_color in [BLACK, WHITE] {
@@ -362,14 +362,14 @@ impl Board {
                     for dir in pinner_piece_move_directions {
                         // pinned piece is of the same color as color being checked
                         let mut possible_pinned_piece: Option<u8> = None;
-                        'pin_direction_scan: for square_in_dir in square_of_king.get_all_squares_in_direction(dir) {
+                        'pin_direction_scan: for square_in_dir in square_of_king.get_all_squares_in_direction(&dir) {
                             if let Some(piece_in_dir) = self.get_piece_at(&square_in_dir) {
                                 let piece_in_dir_color = get_piece_color(piece_in_dir);
                                 if let Some(pinned_piece) = possible_pinned_piece {
                                     let piece_in_dir_type = get_piece_type(piece_in_dir);
                                     if piece_in_dir_type == pinner_piece_type || piece_in_dir_type == QUEEN {
                                         if piece_in_dir_color != king_color {
-                                            pinned_pieces[king_color].insert(square_in_dir.pos(), dir);
+                                            pinned_pieces[king_color as usize].insert(square_in_dir.pos(), dir);
 
                                         }
                                     }
@@ -401,7 +401,7 @@ impl Board {
             
             match origin_piece_type {
                 PAWN => {
-                    if let Some(pinned_direction) = pinned_pieces.get(&origin_square_pos) {
+                    if let Some(pinned_direction) = pinned_pieces[origin_piece_color as usize].get(&origin_square_pos) {
                         continue;
                     }
                     let dir = if is_white { -1i8 } else { 1i8 };
@@ -452,7 +452,7 @@ impl Board {
                     }
                 },
                 KNIGHT | KING => {
-                    if let Some(pinned_direction) = pinned_pieces.get(&origin_square_pos) {
+                    if let Some(pinned_direction) = pinned_pieces[origin_piece_color as usize].get(&origin_square_pos) {
                         // kings cannot be pinned, and knights cannot move when pinned
                         continue;
                     }
@@ -486,8 +486,8 @@ impl Board {
                     }
                 },
                 BISHOP | ROOK | QUEEN => {
-                    let move_directions = if let Some(pinned_direction) = pinned_pieces.get(&origin_square_pos) {
-                        let pinned_directions = &[pinned_direction, Direction(-pinned_direction.dx(), -pinned_direction.dy())][..];
+                    let move_directions = if let Some(pinned_direction) = pinned_pieces[origin_piece_color as usize].get(&origin_square_pos) {
+                        let pinned_directions: &[Direction] = &[pinned_direction, Direction(-pinned_direction.dx(), -pinned_direction.dy())][..];
                         match origin_piece_type {
                             BISHOP => if Direction::ORDINALS.contains(pinned_direction) { pinned_direction } else { &[] },
                             ROOK => if Direction::CARDINALS.contains(pinned_direction) { pinned_direction } else { &[] },
