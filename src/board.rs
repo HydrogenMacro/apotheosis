@@ -347,7 +347,9 @@ impl Board {
     pub fn get_board_info(&self) -> BoardInfo {
         let mut valid_moves: [Vec<BoardMove>; 2] = [Vec::new(), Vec::new()];
         let mut board_pieces = self.get_pieces();
-        let mut square_control: [BoardSquareInfo; 64] = <dyn Default>::default();
+        
+        const BOARD_SQUARE_INFO_DEFAULT = Default::default();
+        let mut square_control: [BoardSquareInfo; 64] = [BOARD_SQUARE_INFO_DEFAULT; 64];
 
         let mut pinned_pieces: [IntMap<u8, Direction>; 2] = [IntMap::default(), IntMap::default()];
         for king_color in [BLACK, WHITE] {
@@ -434,11 +436,12 @@ impl Board {
                             // en passant
                             if let Some(en_passant_target_square) = self.en_passant_target_square() {
                                 if en_passant_target_square == capturable_square {
-                                    let en_passant_captured_square = origin_square.get_square_in_direction(&Direction(possible_capturable_direction.dx(), 0));
-                                    let en_passant_captured_piece = self.get_piece_at(en_passant_captured_square);
-                                    if origin_piece_color != get_piece_color(en_passant_captured_piece) {
-                                        valid_moves[origin_piece_color as usize].push(BoardMove::new(&origin_square, &capturable_square).as_en_passant());
-                                        continue;
+                                    if let Some(en_passant_captured_square) = origin_square.get_square_in_direction(&Direction(possible_capturable_direction.dx(), 0)) {
+                                        let en_passant_captured_piece = self.get_piece_at(en_passant_captured_square);
+                                        if origin_piece_color != get_piece_color(en_passant_captured_piece) {
+                                            valid_moves[origin_piece_color as usize].push(BoardMove::new(&origin_square, &capturable_square).as_en_passant());
+                                            continue;
+                                        }
                                     }
                                 }
                             }
@@ -487,10 +490,10 @@ impl Board {
                 },
                 BISHOP | ROOK | QUEEN => {
                     let move_directions = if let Some(pinned_direction) = pinned_pieces[origin_piece_color as usize].get(&origin_square_pos) {
-                        let pinned_directions: &[Direction] = &[pinned_direction, Direction(-pinned_direction.dx(), -pinned_direction.dy())][..];
+                        let pinned_directions: &[Direction] = &[*pinned_direction, Direction(-pinned_direction.dx(), -pinned_direction.dy())][..];
                         match origin_piece_type {
-                            BISHOP => if Direction::ORDINALS.contains(pinned_direction) { pinned_direction } else { &[] },
-                            ROOK => if Direction::CARDINALS.contains(pinned_direction) { pinned_direction } else { &[] },
+                            BISHOP => if Direction::ORDINALS.contains(pinned_direction) { pinned_directions } else { &[] },
+                            ROOK => if Direction::CARDINALS.contains(pinned_direction) { pinned_directions } else { &[] },
                             QUEEN => pinned_directions,
                             _ => unreachable!()
                         }
