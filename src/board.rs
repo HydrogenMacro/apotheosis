@@ -348,7 +348,7 @@ impl Board {
         let mut valid_moves: [Vec<BoardMove>; 2] = [Vec::new(), Vec::new()];
         let mut board_pieces = self.get_pieces();
         
-        const BOARD_SQUARE_INFO_DEFAULT = Default::default();
+        const BOARD_SQUARE_INFO_DEFAULT: BoardSquareInfo = Default::default();
         let mut square_control: [BoardSquareInfo; 64] = [BOARD_SQUARE_INFO_DEFAULT; 64];
 
         let mut pinned_pieces: [IntMap<u8, Direction>; 2] = [IntMap::default(), IntMap::default()];
