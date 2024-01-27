@@ -437,10 +437,11 @@ impl Board {
                             if let Some(en_passant_target_square) = self.en_passant_target_square() {
                                 if en_passant_target_square == capturable_square {
                                     if let Some(en_passant_captured_square) = origin_square.get_square_in_direction(&Direction(possible_capturable_direction.dx(), 0)) {
-                                        let en_passant_captured_piece = self.get_piece_at(en_passant_captured_square);
-                                        if origin_piece_color != get_piece_color(en_passant_captured_piece) {
-                                            valid_moves[origin_piece_color as usize].push(BoardMove::new(&origin_square, &capturable_square).as_en_passant());
-                                            continue;
+                                        if let Some(en_passant_captured_piece) = self.get_piece_at(&en_passant_captured_square) {
+                                            if origin_piece_color != get_piece_color(en_passant_captured_piece) {
+                                                valid_moves[origin_piece_color as usize].push(BoardMove::new(&origin_square, &capturable_square).as_en_passant());
+                                                continue;
+                                            }
                                         }
                                     }
                                 }
