@@ -1,13 +1,7 @@
 use crate::board::{
     Board
 };
-pub fn eval_board_basic(board: Board) -> i32 {
-    
-    let BoardInfo {
-        valid_moves,
-        board_pieces,
-        square_control
-    } = board.get_board_info();
+pub fn eval_board(board: Board, depth: u32) -> i32 {
     
     let board_info = board.get_board_info();
     
@@ -23,9 +17,17 @@ pub fn eval_board_basic(board: Board) -> i32 {
         + (board_info.white_rooks.len() as i32 - board_info.black_rooks.len() as i32) * 5
         + (board_info.white_queens.len() as i32 - board_info.black_queens.len() as i32) * 9;
     
+    // positional eval, etc
     
-    for possible_move in board.get_valid_moves() {
-
+    if depth == 0 {
+        return todo!();
+    }
+    
+    // keep track of best / most volatile
+    for valid_move in board_info.valid_moves {
+        let resulting_board = board.create_board_from_move(valid_move);
+        let resulting_board_evaluation = eval_board(resulting_board, depth - 1);
+        
     }
     
     todo!();
