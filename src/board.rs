@@ -10,7 +10,7 @@ use std::{
 use ethnum::*;
 use nohash_hasher::*;
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
+#[derive(PartialEq, Eq, Clone, PartialOrd, Ord, Debug)]
 pub struct Direction(i8, i8);
 impl Direction {
     pub const fn dx(&self) -> i8 {
@@ -172,14 +172,41 @@ impl BoardMove {
         );
     }
     pub const EN_PASSANT_MASK: u16 = 0b0000_0000_0000_0100u16;
-    pub fn as_en_passant(&self) -> BoardMove {
-        return BoardMove(self.0 | BoardMove::EN_PASSANT_MASK);
+    pub fn new_as_en_passant(origin_square: &BoardSquare, dest_square: &BoardSquare) -> BoardMove {
+        return BoardMove(
+            ((origin_square_pos as u16) << 9)
+            | ((dest_square_pos as u16) << 3)
+            | BoardMove::EN_PASSANT_MASK
+        );
+    }
+    pub fn new_as_promotion(origin_square: &BoardSquare, dest_square: &BoardSquare, promotion_target_piece: BoardPiece) -> BoardMove {
+        let promotion_piece_mask: u16 = match promotion_target_piece {
+            KNIGHT => 0b00,
+            BISHOP => 0b01,
+            ROOK => 0b10,
+            QUEEN => 0b11,
+            _ => panic!("cannot promote to such piece")
+        };
+        return BoardMove(
+            ((origin_square_pos as u16) << 9)
+            | ((dest_square_pos as u16) << 3)
+            | promotion_piece_mask
+        );
+    }
+    pub fn promotion_target_piece(&self) -> BoardPiece {
+        return match self.0 & 0b11 {
+            0b00 => KNIGHT,
+            0b01 => BISHOP, 
+            0b10 => ROOK,
+            0b11 => QUEEN,
+            _ => unreachable!()
+        };
     }
     pub const fn is_en_passant(&self) -> bool {
         return (self.0 & BoardMove::EN_PASSANT_MASK) != 0;
     }
     pub const fn is_castle(&self) -> bool {
-        return (self.0 & 1) == 1;
+        return (self.0 >> 15) & 1 == 1;
     }
     pub const fn from_square(&self) -> BoardSquare {
         return BoardSquare(((self.0 >> 9) & 0b111111) as u8);
@@ -207,9 +234,10 @@ pub struct BoardPieces {
     queens: [Vec<BoardSquare>; 2],
     kings: [Option<BoardSquare>; 2]
 }
-#[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Default)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub struct BoardSquareInfo(Option<BoardPiece>, [u32; 2]);
 impl BoardSquareInfo {
+    pub const fn new() -> BoardSquareInfo { BoardSquareInfo { None, [0, 0] } }
     pub fn occupant(&self) -> Option<BoardPiece> { self.0 }
     pub fn visibility(&self) -> [u32; 2] { self.1 }
 }
@@ -289,12 +317,10 @@ impl Board {
         return board;
     }
     pub const fn active_color(&self) -> BoardColor {
-        let mask = 1u32;
-        return ((self.1 >> 31) & mask) as u8;
+        return ((self.1 >> 31) & 0b1u32) as u8;
     }
     pub const fn castle_availibility(&self) -> [(bool, bool); 2] {
-        let mask = 0b1111u32;
-        let bitflags = (self.1 >> 27) & mask;
+        let bitflags = (self.1 >> 27) & 0b1111u32;
         return [
             (
                 bitflags & 0b1000 != 0,
@@ -348,12 +374,12 @@ impl Board {
         let mut valid_moves: [Vec<BoardMove>; 2] = [Vec::new(), Vec::new()];
         let mut board_pieces = self.get_pieces();
         
-        const BOARD_SQUARE_INFO_DEFAULT: BoardSquareInfo = Default::default();
+        const BOARD_SQUARE_INFO_DEFAULT: BoardSquareInfo = BoardSquareInfo::new();
         let mut square_control: [BoardSquareInfo; 64] = [BOARD_SQUARE_INFO_DEFAULT; 64];
 
         let mut pinned_pieces: [IntMap<u8, Direction>; 2] = [IntMap::default(), IntMap::default()];
         for king_color in [BLACK, WHITE] {
-            if let Some(square_of_king) = board_pieces.kings[king_color as usize] {
+            if let Some(square_of_king) = &board_pieces.kings[king_color as usize] {
                 for (
                     pinner_piece_type,
                     pinner_piece_move_directions
@@ -401,6 +427,7 @@ impl Board {
             let is_white = origin_piece_color == WHITE;
             let origin_piece_type = get_piece_type(origin_piece);
             
+            // TODO: track captures
             match origin_piece_type {
                 PAWN => {
                     if let Some(pinned_direction) = pinned_pieces[origin_piece_color as usize].get(&origin_square_pos) {
@@ -439,7 +466,7 @@ impl Board {
                                     if let Some(en_passant_captured_square) = origin_square.get_square_in_direction(&Direction(possible_capturable_direction.dx(), 0)) {
                                         if let Some(en_passant_captured_piece) = self.get_piece_at(&en_passant_captured_square) {
                                             if origin_piece_color != get_piece_color(en_passant_captured_piece) {
-                                                valid_moves[origin_piece_color as usize].push(BoardMove::new(&origin_square, &capturable_square).as_en_passant());
+                                                valid_moves[origin_piece_color as usize].push(BoardMove::new_as_en_passant(&origin_square, &capturable_square));
                                                 continue;
                                             }
                                         }
@@ -491,10 +518,10 @@ impl Board {
                 },
                 BISHOP | ROOK | QUEEN => {
                     let move_directions = if let Some(pinned_direction) = pinned_pieces[origin_piece_color as usize].get(&origin_square_pos) {
-                        let pinned_directions: &[Direction] = &[*pinned_direction, Direction(-pinned_direction.dx(), -pinned_direction.dy())][..];
+                        let pinned_directions: [Direction; 2] = [pinned_direction.clone(), Direction(-pinned_direction.dx(), -pinned_direction.dy())];
                         match origin_piece_type {
-                            BISHOP => if Direction::ORDINALS.contains(pinned_direction) { pinned_directions } else { &[] },
-                            ROOK => if Direction::CARDINALS.contains(pinned_direction) { pinned_directions } else { &[] },
+                            BISHOP => if Direction::ORDINALS.contains(pinned_direction) { &pinned_directions[..] } else { &[] },
+                            ROOK => if Direction::CARDINALS.contains(pinned_direction) { &pinned_directions[..] } else { &[] },
                             QUEEN => pinned_directions,
                             _ => unreachable!()
                         }
@@ -534,39 +561,77 @@ impl Board {
             square_control
         };
     }
+    pub fn set_piece_at(&mut self, board_square: BoardSquare, new_piece: BoardPiece) {
+        self.0 &= !(new_piece.as_u256() << U256::from(board_square.pos() * 4));
+    }
     pub fn create_board_from_move(&self, board_move: &BoardMove) -> Board {
+        // this does not check for move validity
         let mut new_board = self.clone();
         if board_move.is_castle() {
-            let [castle_color, castle_side] = match *board_move {
-                BoardMove::CASTLE_BQ => [1, 1],
-                
+            let [king_x_delta, rook_x_delta] = match *board_move {
+                BoardMove::CASTLE_BQ | BoardMove::CASTLE_WQ => [-3, 3],
+                BoardMove::CASTLE_BK | BoardMove::CASTLE_WK => [2, -2],
                 _ => unreachable!()
             };
+
+            board_move &= !(0b11u32 << if self.active_color() == BLACK { 28u32 } else { 26u32 });
             todo!();
+        } else {
+            let from_square = board_move.from_square();
+            let dest_square = board_move.dest_square();
+
+            let from_piece = self.get_piece_at(from_square);
+            let from_piece_type = get_piece_type(from_piece)
+            self.set_piece_at(from_square, 0b0000u8);
+
+            let is_promotion = from_piece_type == PAWN && (from_square.y() == 0 || from_square.y() == 7);
+            if is_promotion {
+                self.set_piece_at(dest_square, board_move.promotion_target_piece());
+            } else {
+                self.set_piece_at(dest_square, from_piece);
+            }
+
+            if board_move.is_en_passant() {
+                let en_passant_captured_square = from_square.get_square_in_direction(
+                    if get_color_of(from_piece) == WHITE { Direction::S } else { Direction::N }
+                );
+                self.set_piece_at(en_passant_captured_square, 0b0000u8);
+            }
+
+            match from_piece_type {
+                ROOK => {
+                    // color would not be a problem
+                    // since the rook would have to be on that square in order to move out of it
+                    match (from_square.x(), from_square.y()) {
+                        (7, 7) => self.1 &= !(1u32 << 29), // black queenside
+                        (7, 0) => self.1 &= !(1u32 << 30),
+                        (0, 7) => self.1 &= !(1u32 << 27),
+                        (0, 0) => self.1 &= !(1u32 << 28)
+                        _ =>  {}
+                    }
+                },
+                KING => {
+                    board_move &= !(0b11u32 << if self.active_color() == BLACK { 28u32 } else { 26u32 });
+                },
+                _ => {}
+            }
         }
-        // is not castle
-        let from_square_pos = board_move.from_square().pos();
-        let dest_square_pos = board_move.dest_square().pos();
-        let mask = U256::new(0b1111);
-        let from_piece = ((self.0 >> U256::from(from_square_pos * 4)) & mask).as_u8();
-        let _dest_piece = ((self.0 >> U256::from(from_square_pos * 4)) & mask).as_u8();
-        
-        // clear from_square and dest_square
-        new_board.0 &= !(mask << U256::from(from_square_pos * 4));
-        new_board.0 &= !(mask << U256::from(dest_square_pos * 4));
-        
-        // set dest_square
-        new_board.0 |= U256::from(from_piece << dest_square_pos * 4);
+        // toggle active color 
+        self.1 ^ (1u32 << 31);
+
         return new_board;
     }
 }
 impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut s = String::with_capacity(64 + 8);
+        let mut s = String::with_capacity(12 + ((2 + 8 + 1) * 8) + 8);
         let mask = U256::new(0b1111);
-        for row in (0..64).step_by(8) {
+        s.push_str("  abcdefg\n\n");
+        for row in 0..8 {
+            s.push_str((8 - row).to_string());
+            s.push(' ');
             for col in 0..8 {
-                let board_square = U256::new((row + col) * 4);
+                let board_square = U256::new((row * 8 + col) * 4);
                 let board_piece = ((self.0 >> board_square) & mask).as_u8();
                 let board_piece_char = match board_piece {
                     _ if board_piece == BLACK | PAWN => 'p',

@@ -20,8 +20,8 @@ first byte (a):
         c describes side (0 - queen, 1 - king)
 
 
-A board takes the form of an (u128, u128, u32)
-first/second part:
+A board takes the form of an (u256, u32)
+first part:
     describes pieces
     piece codes:
 		    0000 - blank
@@ -32,7 +32,7 @@ first/second part:
 		    101x - queen
 		    110x - king
 		    x describes color (0 - black, 1 - white)
-third part:
+second part:
     format:
         abbb bcdd dddd 0000 0000 0000 0000 0000
     a describes turn

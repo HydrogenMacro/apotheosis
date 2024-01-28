@@ -135,6 +135,10 @@ fn king_movement_test() {
     );
 }
 
+
+
+
+
 fn boardmove(s1: &str, s2: &str) -> BoardMove {
     return BoardMove::new(&BoardSquare::from(s1), &BoardSquare::from(s2));
 }
