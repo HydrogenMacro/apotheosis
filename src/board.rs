@@ -561,7 +561,7 @@ impl Board {
             square_control
         };
     }
-    pub fn set_piece_at(&mut self, board_square: BoardSquare, new_piece: BoardPiece) {
+    pub fn set_piece_at(&mut self, board_square: &BoardSquare, new_piece: BoardPiece) {
         self.0 &= !(new_piece.as_u256() << U256::from(board_square.pos() * 4));
     }
     pub fn create_board_from_move(&self, board_move: &BoardMove) -> Board {
