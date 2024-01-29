@@ -582,18 +582,18 @@ impl Board {
 
             let from_piece = self.get_piece_at(&from_square).expect("board move should have valid move squares");
             let from_piece_type = get_piece_type(from_piece);
-            self.set_piece_at(from_square, 0b0000u8);
+            self.set_piece_at(&from_square, 0b0000u8);
 
             let is_promotion = from_piece_type == PAWN && (from_square.y() == 0 || from_square.y() == 7);
             if is_promotion {
-                self.set_piece_at(dest_square, board_move.promotion_target_piece());
+                self.set_piece_at(&dest_square, board_move.promotion_target_piece());
             } else {
-                self.set_piece_at(dest_square, from_piece);
+                self.set_piece_at(&dest_square, from_piece);
             }
 
             if board_move.is_en_passant() {
                 let en_passant_captured_square = from_square.get_square_in_direction(
-                    if get_piece_color(from_piece) == WHITE { Direction::S } else { Direction::N }
+                    if get_piece_color(from_piece) == WHITE { &Direction::S } else { &Direction::N }
                 ).expect("square should be valid");
                 self.set_piece_at(&en_passant_captured_square, 0b0000u8);
             }
