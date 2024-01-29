@@ -5,7 +5,8 @@ use std::{
     },
     cmp,
     default::Default,
-    fmt
+    fmt,
+    rc::Rc
 };
 use ethnum::*;
 use nohash_hasher::*;
@@ -517,23 +518,23 @@ impl Board {
                     }
                 },
                 BISHOP | ROOK | QUEEN => {
-                    let move_directions = if let Some(pinned_direction) = pinned_pieces[origin_piece_color as usize].get(&origin_square_pos) {
-                        let pinned_directions = &[*pinned_direction, Direction(-pinned_direction.dx(), -pinned_direction.dy())];
+                    let move_directions: Box<[Direction]> = if let Some(pinned_direction) = pinned_pieces[origin_piece_color as usize].get(&origin_square_pos) {
+                        let pinned_directions: Box<[Direction]> = Box::new([pinned_direction.clone(), Direction(-pinned_direction.dx(), -pinned_direction.dy())]);
                         match origin_piece_type {
-                            BISHOP => if Direction::ORDINALS.contains(pinned_direction) { &pinned_directions[..] } else { &[] },
-                            ROOK => if Direction::CARDINALS.contains(pinned_direction) { &pinned_directions[..] } else { &[] },
-                            QUEEN => pinned_directions,////////////////////
+                            BISHOP => if Direction::ORDINALS.contains(pinned_direction) { pinned_directions } else { Box<[]> },
+                            ROOK => if Direction::CARDINALS.contains(pinned_direction) { pinned_directions } else { Box<[]> },
+                            QUEEN => pinned_directions,
                             _ => unreachable!()
                         }
                     } else {
                         match origin_piece_type {
-                            BISHOP => &Direction::ORDINALS[..],
-                            ROOK => &Direction::CARDINALS[..],
-                            QUEEN => &Direction::COMPASS_ROSE[..],
+                            BISHOP => Box::new(Direction::ORDINALS),
+                            ROOK => Box::new(Direction::CARDINALS),
+                            QUEEN => Box::new(Direction::COMPASS_ROSE),
                             _ => unreachable!()
                         }
                     };
-                    for move_direction in move_directions.into_iter() {
+                    for move_direction in &*move_directions.into_iter() {
                         let reachable_squares = origin_square.get_all_squares_in_direction(move_direction);
                         let mut can_still_move = true;
                         let mut seen_pieces: Vec<BoardPiece> = Vec::new();
