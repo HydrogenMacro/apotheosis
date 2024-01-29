@@ -174,8 +174,8 @@ impl BoardMove {
     pub const EN_PASSANT_MASK: u16 = 0b0000_0000_0000_0100u16;
     pub fn new_as_en_passant(origin_square: &BoardSquare, dest_square: &BoardSquare) -> BoardMove {
         return BoardMove(
-            ((origin_square_pos as u16) << 9)
-            | ((dest_square_pos as u16) << 3)
+            ((origin_square.pos() as u16) << 9)
+            | ((dest_square.pos() as u16) << 3)
             | BoardMove::EN_PASSANT_MASK
         );
     }
@@ -188,8 +188,8 @@ impl BoardMove {
             _ => panic!("cannot promote to such piece")
         };
         return BoardMove(
-            ((origin_square_pos as u16) << 9)
-            | ((dest_square_pos as u16) << 3)
+            ((origin_square.pos() as u16) << 9)
+            | ((dest_square.pos() as u16) << 3)
             | promotion_piece_mask
         );
     }
@@ -237,7 +237,7 @@ pub struct BoardPieces {
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub struct BoardSquareInfo(Option<BoardPiece>, [u32; 2]);
 impl BoardSquareInfo {
-    pub const fn new() -> BoardSquareInfo { BoardSquareInfo { None, [0, 0] } }
+    pub const fn new() -> BoardSquareInfo { BoardSquareInfo(None, [0, 0]) }
     pub fn occupant(&self) -> Option<BoardPiece> { self.0 }
     pub fn visibility(&self) -> [u32; 2] { self.1 }
 }
@@ -522,7 +522,7 @@ impl Board {
                         match origin_piece_type {
                             BISHOP => if Direction::ORDINALS.contains(pinned_direction) { &pinned_directions[..] } else { &[] },
                             ROOK => if Direction::CARDINALS.contains(pinned_direction) { &pinned_directions[..] } else { &[] },
-                            QUEEN => pinned_directions,
+                            QUEEN => &pinned_directions[..],
                             _ => unreachable!()
                         }
                     } else {
@@ -574,14 +574,14 @@ impl Board {
                 _ => unreachable!()
             };
 
-            board_move &= !(0b11u32 << if self.active_color() == BLACK { 28u32 } else { 26u32 });
+            new_board.1 &= !(0b11u32 << if self.active_color() == BLACK { 28u32 } else { 26u32 });
             todo!();
         } else {
             let from_square = board_move.from_square();
             let dest_square = board_move.dest_square();
 
-            let from_piece = self.get_piece_at(from_square);
-            let from_piece_type = get_piece_type(from_piece)
+            let from_piece = self.get_piece_at(&from_square).expect("board move should have valid move squares");
+            let from_piece_type = get_piece_type(from_piece);
             self.set_piece_at(from_square, 0b0000u8);
 
             let is_promotion = from_piece_type == PAWN && (from_square.y() == 0 || from_square.y() == 7);
@@ -593,9 +593,9 @@ impl Board {
 
             if board_move.is_en_passant() {
                 let en_passant_captured_square = from_square.get_square_in_direction(
-                    if get_color_of(from_piece) == WHITE { Direction::S } else { Direction::N }
-                );
-                self.set_piece_at(en_passant_captured_square, 0b0000u8);
+                    if get_piece_color(from_piece) == WHITE { Direction::S } else { Direction::N }
+                ).expect("square should be valid");
+                self.set_piece_at(&en_passant_captured_square, 0b0000u8);
             }
 
             match from_piece_type {
@@ -606,12 +606,12 @@ impl Board {
                         (7, 7) => self.1 &= !(1u32 << 29), // black queenside
                         (7, 0) => self.1 &= !(1u32 << 30),
                         (0, 7) => self.1 &= !(1u32 << 27),
-                        (0, 0) => self.1 &= !(1u32 << 28)
+                        (0, 0) => self.1 &= !(1u32 << 28),
                         _ =>  {}
                     }
                 },
                 KING => {
-                    board_move &= !(0b11u32 << if self.active_color() == BLACK { 28u32 } else { 26u32 });
+                    self.1 &= !(0b11u32 << if self.active_color() == BLACK { 28u32 } else { 26u32 });
                 },
                 _ => {}
             }
@@ -628,7 +628,7 @@ impl fmt::Display for Board {
         let mask = U256::new(0b1111);
         s.push_str("  abcdefg\n\n");
         for row in 0..8 {
-            s.push_str((8 - row).to_string());
+            s.push_str(&(8 - row).to_string());
             s.push(' ');
             for col in 0..8 {
                 let board_square = U256::new((row * 8 + col) * 4);
