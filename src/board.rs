@@ -534,7 +534,7 @@ impl Board {
                             _ => unreachable!()
                         }
                     };
-                    for move_direction in &*move_directions.into_iter() {
+                    for move_direction in move_directions.into_iter() {
                         let reachable_squares = origin_square.get_all_squares_in_direction(move_direction);
                         let mut can_still_move = true;
                         let mut seen_pieces: Vec<BoardPiece> = Vec::new();
