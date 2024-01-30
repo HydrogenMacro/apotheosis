@@ -228,12 +228,12 @@ impl fmt::Display for BoardMove {
 }
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Default)]
 pub struct BoardPieces {
-    pawns: [Vec<BoardSquare>; 2],
-    knights: [Vec<BoardSquare>; 2],
-    bishops: [Vec<BoardSquare>; 2],
-    rooks: [Vec<BoardSquare>; 2],
-    queens: [Vec<BoardSquare>; 2],
-    kings: [Option<BoardSquare>; 2]
+    pub pawns: [Vec<BoardSquare>; 2],
+    pub knights: [Vec<BoardSquare>; 2],
+    pub bishops: [Vec<BoardSquare>; 2],
+    pub rooks: [Vec<BoardSquare>; 2],
+    pub queens: [Vec<BoardSquare>; 2],
+    pub kings: [Option<BoardSquare>; 2]
 }
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub struct BoardSquareInfo(Option<BoardPiece>, [u32; 2]);
@@ -244,9 +244,9 @@ impl BoardSquareInfo {
 }
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub struct BoardInfo {
-    valid_moves: [Vec<BoardMove>; 2],
-    board_pieces: BoardPieces,
-    square_control: [BoardSquareInfo; 64]
+    pub valid_moves: [Vec<BoardMove>; 2],
+    pub board_pieces: BoardPieces,
+    pub square_control: [BoardSquareInfo; 64]
 }
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Clone)]
 pub struct Board(u256, u32);
