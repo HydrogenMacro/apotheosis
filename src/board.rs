@@ -604,10 +604,10 @@ impl Board {
                     // color would not be a problem
                     // since the rook would have to be on that square in order to move out of it
                     match (from_square.x(), from_square.y()) {
-                        (7, 7) => self.1 &= !(1u32 << 29), // black queenside
-                        (7, 0) => self.1 &= !(1u32 << 30),
-                        (0, 7) => self.1 &= !(1u32 << 27),
-                        (0, 0) => self.1 &= !(1u32 << 28),
+                        (7, 7) => new_board.1 &= !(1u32 << 29), // black queenside
+                        (7, 0) => new_board.1 &= !(1u32 << 30),
+                        (0, 7) => new_board.1 &= !(1u32 << 27),
+                        (0, 0) => new_board.1 &= !(1u32 << 28),
                         _ =>  {}
                     }
                 },
