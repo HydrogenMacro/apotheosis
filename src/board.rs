@@ -521,8 +521,8 @@ impl Board {
                     let move_directions: Box<[Direction]> = if let Some(pinned_direction) = pinned_pieces[origin_piece_color as usize].get(&origin_square_pos) {
                         let pinned_directions: Box<[Direction]> = Box::new([pinned_direction.clone(), Direction(-pinned_direction.dx(), -pinned_direction.dy())]);
                         match origin_piece_type {
-                            BISHOP => if Direction::ORDINALS.contains(pinned_direction) { pinned_directions } else { Box<[]> },
-                            ROOK => if Direction::CARDINALS.contains(pinned_direction) { pinned_directions } else { Box<[]> },
+                            BISHOP => if Direction::ORDINALS.contains(pinned_direction) { pinned_directions } else { Box([]) },
+                            ROOK => if Direction::CARDINALS.contains(pinned_direction) { pinned_directions } else { Box([]) },
                             QUEEN => pinned_directions,
                             _ => unreachable!()
                         }
