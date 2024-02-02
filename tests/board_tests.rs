@@ -11,150 +11,71 @@ use std::{
 };
 
 #[test]
-fn pawn_movement_test() {
-    let test_board = Board::from_fen(
-        "8/8/8/8/8/2n5/1P6/8 w - - 0 1"
-    );
-    let test_board_valid_moves = vec![
-        boardmove("b2", "b3"),
-        boardmove("b2", "c3"),
-        boardmove("b2", "b4")
+fn board_move_test() {
+    const valid_move_tests = [
+        // pins and en passant
+        ("8/3p1p2/p2P1P2/Pp2BP1p/RP3PpP/2n2pP1/r4P2/k1K5 b - h3 0 1", [
+            [
+                ["^g4", "h3"],
+                ["a2", "a3"],
+                ["a2", "a4"],
+                ["b5", "a4"],
+                ["a2", "a4"],
+            ],
+            [
+                ["a4", "a3"],
+                ["a4", "a2"],
+                ["e5", "d4"],
+                ["e5", "c3"],
+            ],
+        ]),
+        // castling
+        ("r3k2r/Rp5p/pP5P/P7/1p6/pPp2p1p/PrP2P1P/R3K2R w KQq - 0 1", [
+            [
+                ["b2", "a1"],
+                ["b2", "b1"],
+                ["b2", "b3"],
+                ["b2", "c2"],
+                ["a8", "a7"],
+                ["a8", "b8"],
+                ["a8", "c8"],
+                ["a8", "d8"],
+                ["e8", "d8"],
+                ["e8", "f8"],
+                ["e8", "d7"],
+                ["e8", "e7"],
+                ["e8", "f7"],
+                ["h8", "g8"],
+                ["h8", "f8"],
+                ["c", "bq"]
+            ],
+            [
+                ["a1", "b1"],
+                ["a1", "c1"],
+                ["a1", "d1"],
+                ["e1", "d1"],
+                ["e1", "f1"],
+                ["h1", "g1"],
+                ["h1", "f1"],
+                ["a7", "b7"],
+                ["a7", "a6"],
+                ["a7", "a8"],
+                ["c", "wk"]
+            ]
+        ]),
     ];
-    let test_board_found_moves = test_board.get_board_info().valid_moves;
-    assert_eq_lists(
-        &test_board_found_moves, 
-        &test_board_valid_moves
-    );
 }
-
-#[test]
-fn knight_movement_test() {
-    let test_board = Board::from_fen(
-        "8/8/8/p7/P7/3q4/1N6/8 w - - 0 1"
-    );
-    let test_board_valid_moves = vec![
-        boardmove("b2", "c4"),
-        boardmove("b2", "d3"),
-        boardmove("b2", "d1")
-    ];
-    let test_board_found_moves = test_board.get_board_info().valid_moves;
-    assert_eq_lists(
-        &test_board_found_moves, 
-        &test_board_valid_moves
-    );
-}
-
-#[test]
-fn bishop_movement_test() {
-    let test_board = Board::from_fen(
-        "8/8/5p2/5P2/8/3B4/4q3/8 w - - 0 1"
-    );
-    let test_board_valid_moves = vec![
-        boardmove("d3", "b1"),
-        boardmove("d3", "c2"),
-        boardmove("d3", "e4"),
-        boardmove("d3", "a6"),
-        boardmove("d3", "b5"),
-        boardmove("d3", "c4"),
-        boardmove("d3", "e2")
-    ];
-    let test_board_found_moves = test_board.get_board_info().valid_moves;
-    assert_eq_lists(
-        &test_board_found_moves, 
-        &test_board_valid_moves
-    );
-}
-
-#[test]
-fn rook_movement_test() {
-    let test_board = Board::from_fen(
-        "8/8/8/2p5/2P5/8/2R3q1/8 w - - 0 1"
-    );
-    let test_board_valid_moves = vec![
-        boardmove("c2", "a2"),
-        boardmove("c2", "b2"),
-        boardmove("c2", "d2"),
-        boardmove("c2", "e2"),
-        boardmove("c2", "f2"),
-        boardmove("c2", "g2"),
-        boardmove("c2", "c1"),
-        boardmove("c2", "c3")
-    ];
-    let test_board_found_moves = test_board.get_board_info().valid_moves;
-    assert_eq_lists(
-        &test_board_found_moves, 
-        &test_board_valid_moves
-    );
-}
-
-#[test]
-fn queen_movement_test() {
-    let test_board = Board::from_fen(
-        "8/8/1p2p3/1P2P3/8/8/1Q3q2/8 w - - 0 1"
-    );
-    let test_board_valid_moves = vec![
-        boardmove("b2", "a1"),
-        boardmove("b2", "b1"),
-        boardmove("b2", "c1"),
-        boardmove("b2", "a2"),
-        boardmove("b2", "c2"),
-        boardmove("b2", "a3"),
-        boardmove("b2", "b3"),
-        boardmove("b2", "c3"),
-        boardmove("b2", "b4"),
-        boardmove("b2", "d2"),
-        boardmove("b2", "e2"),
-        boardmove("b2", "f2"),
-        boardmove("b2", "d4")
-    ];
-    let test_board_found_moves = test_board.get_board_info().valid_moves;
-    assert_eq_lists(
-        &test_board_found_moves, 
-        &test_board_valid_moves
-    );
-}
-
-#[test]
-fn king_movement_test() {
-    let test_board = Board::from_fen(
-        "8/8/8/8/p7/P7/1Kq5/8 w - - 0 1"
-    );
-    let test_board_valid_moves = vec![
-        boardmove("b2", "a1"),
-        boardmove("b2", "b1"),
-        boardmove("b2", "c1"),
-        boardmove("b2", "a2"),
-        boardmove("b2", "c2"),
-        boardmove("b2", "b3"),
-        boardmove("b2", "c3"),
-    ];
-    let test_board_found_moves = test_board.get_board_info().valid_moves;
-    assert_eq_lists(
-        &test_board_found_moves, 
-        &test_board_valid_moves
-    );
-}
-
-
-
-
 
 fn boardmove(s1: &str, s2: &str) -> BoardMove {
-    return BoardMove::new(&BoardSquare::from(s1), &BoardSquare::from(s2));
-}
-fn assert_eq_lists<T>(a: &[T], b: &[T])
-where
-    T: PartialEq + Ord + fmt::Display
-{
-    let mut a: Vec<_> = a.iter().collect();
-    let mut b: Vec<_> = b.iter().collect();
-    a.sort();
-    b.sort();
-
-    if a != b {
-        panic!("{} is not a permutation of {}", display_vec(a), display_vec(b));
+    match s1.chars().nth(0).unwrap() {
+        'c' => match s2 {
+            "bk" => BoardMove::CASTLE_BK,
+            "bq" => BoardMove::CASTLE_BQ,
+            "wk" => BoardMove::CASTLE_WK,
+            "wq" => BoardMove::CASTLE_WQ,
+            _ => unreachable!()
+        },
+        '^' => BoardMove::new_as_en_passant(&BoardSquare::from(s1), &BoardSquare::from(s2)),
+        _ => BoardMove::new(&BoardSquare::from(s1), &BoardSquare::from(s2))
     }
-}
-fn display_vec<T: PartialEq + Ord + fmt::Display>(vec: Vec<T>) -> String {
-    return format!("[{}]", vec.iter().fold(String::new(), |acc, num| acc + &num.to_string() + ", "));
 }
