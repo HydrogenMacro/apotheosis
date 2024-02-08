@@ -586,25 +586,27 @@ impl Board {
             }
         }
         // castling
-        const CASTLING_INFO: ([(BoardMove, u8, [BoardSquare; 3]); 2], [(BoardMove, u8, [BoardSquare; 4]; 2); 2]) = (
+        const CASTLING_INFO: [[(BoardMove, u8, [BoardSquare; 3]); 2]; 2] = [
             [
-                (BoardMove::CASTLE_WK, WHITE, [BoardSquare::from("e1"), BoardSquare::from("f1"), BoardSquare::from("g1")]),
-                (BoardMove::CASTLE_BK, BLACK, [BoardSquare::from("e8"), BoardSquare::from("f8"), BoardSquare::from("g8")]),
+                (BoardMove::CASTLE_WK, WHITE, Box::new([BoardSquare::from("e1"), BoardSquare::from("f1"), BoardSquare::from("g1")][..])),
+                (BoardMove::CASTLE_BK, BLACK, Box::new([BoardSquare::from("e8"), BoardSquare::from("f8"), BoardSquare::from("g8")][..])),
             ],
             [
-                (BoardMove::CASTLE_WQ, WHITE, [BoardSquare::from("b1"), BoardSquare::from("c1"), BoardSquare::from("d1"), BoardSquare::from("e1")]),
-                (BoardMove::CASTLE_BQ, BLACK, [BoardSquare::from("b8"), BoardSquare::from("c8"), BoardSquare::from("d8"), BoardSquare::from("e8")]),
+                (BoardMove::CASTLE_WQ, WHITE, Box::new([BoardSquare::from("b1"), BoardSquare::from("c1"), BoardSquare::from("d1"), BoardSquare::from("e1")][..])),
+                (BoardMove::CASTLE_BQ, BLACK, Box::new([BoardSquare::from("b8"), BoardSquare::from("c8"), BoardSquare::from("d8"), BoardSquare::from("e8")][..])),
             ]
-        );
-        'kingside_castle_check: for (castle_move, color, castle_squares) in CASTLING_INFO.0 {
-            if self.castle_availibility()[color as usize][0] {
-                for castle_square in castle_squares {
-                    if square_control[castle_square.pos() as usize][(color ^ 1) as usize] != 0 {
-                        // enemy attacks are on square
-                        break 'kingside_castle_check;
+        ];
+        for castle_board_side in CASTLING_INFO {
+            'castle_check: for (castle_move, color, castle_squares) in castle_board_side {
+                if self.castle_availibility()[color as usize][0] {
+                    for castle_square in castle_squares {
+                        if square_control[castle_square.pos() as usize].visibility[(color ^ 1) as usize] != 0 {
+                            // enemy attacks are on square
+                            continue 'castle_check;
+                        }
                     }
+                    valid_moves[color as usize].push(castle_move);
                 }
-                valid_moves[color as usize].push(castle_move);
             }
         }
 
