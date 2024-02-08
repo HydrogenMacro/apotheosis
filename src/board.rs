@@ -586,7 +586,7 @@ impl Board {
             }
         }
         // castling
-        const CASTLING_INFO: ((BoardMove, u8, [BoardSquare; 3]; 2), (BoardMove, u8, [BoardSquare; 4]; 2)) = (
+        const CASTLING_INFO: ([(BoardMove, u8, [BoardSquare; 3]); 2], [(BoardMove, u8, [BoardSquare; 4]; 2); 2]) = (
             [
                 (BoardMove::CASTLE_WK, WHITE, [BoardSquare::from("e1"), BoardSquare::from("f1"), BoardSquare::from("g1")]),
                 (BoardMove::CASTLE_BK, BLACK, [BoardSquare::from("e8"), BoardSquare::from("f8"), BoardSquare::from("g8")]),
