@@ -429,7 +429,7 @@ impl Board {
                                     } else {
                                         if piece_in_dir_type == pinner_piece_type || piece_in_dir_type == QUEEN {
                                             // enemy piece is checking
-                                            checking_pieces[king_color as usize].push(piece_in_dir.pos());
+                                            checking_pieces[king_color as usize].push(square_in_dir.pos());
                                         }
                                         break 'pin_direction_scan;
                                     }
@@ -450,7 +450,7 @@ impl Board {
             let is_white = origin_piece_color == WHITE;
             let origin_piece_type = get_piece_type(origin_piece);
             
-            square_control[origin_square_pos] = Some(origin_piece);
+            square_control[origin_square_pos as usize] = Some(origin_piece);
             // TODO: track captures
             match origin_piece_type {
                 PAWN => {
@@ -485,7 +485,7 @@ impl Board {
 
                         if let Some(capturable_square) = possible_capturable_square {
                             // en passant
-                            square_control[en_passant_captured_square.pos() as usize].visibility[origin_piece_color] += 1;
+                            square_control[capturable_square.pos() as usize].visibility[origin_piece_color] += 1;
                             if let Some(en_passant_target_square) = self.en_passant_target_square() {
                                 if en_passant_target_square == capturable_square {
                                     if let Some(en_passant_captured_square) = origin_square.get_square_in_direction(&Direction(possible_capturable_direction.dx(), 0)) {
@@ -536,7 +536,11 @@ impl Board {
                                 continue;
                             }
                             if let Some(reachable_piece) = self.get_piece_at(&reachable_square) {
-                                if get_piece_color(reachable_piece) != origin_piece_color {
+                                let piece_color = get_piece_color(reachable_piece);
+                                if piece_color != origin_piece_color {
+                                    if get_piece_type(reachable_piece) == KING && origin_piece_type == KNIGHT {
+                                        checking_pieces[piece_color as usize].push(origin_square.pos()); 
+                                    }
                                     valid_moves[origin_piece_color as usize].push(BoardMove::new(&origin_square, &reachable_square));
                                 }
                             } else {
@@ -566,7 +570,7 @@ impl Board {
                         let reachable_squares = origin_square.get_all_squares_in_direction(move_direction);
                         let mut seen_pieces: Vec<BoardPiece> = Vec::new();
                         for reachable_square in reachable_squares.into_iter() {
-                            square_control[reachable_square.pos() as usize].visibility[origin_piece_color] += 1;
+                            square_control[reachable_square.pos() as usize].visibility[origin_piece_color as usize] += 1;
                             if let Some(reachable_piece) = self.get_piece_at(&reachable_square) {
                                 if get_piece_color(reachable_piece) != origin_piece_color {
                                     valid_moves[origin_piece_color as usize].push(BoardMove::new(&origin_square, &reachable_square));
@@ -582,7 +586,7 @@ impl Board {
             }
         }
         // castling
-        const CASTLING_INFO: ((u8, u8, [BoardSquare; 3]), [(u8, u8, [BoardSquare; 4]); 2]) = (
+        const CASTLING_INFO: ([BoardMove, u8, [BoardSquare; 3]; 2], [BoardMove, u8, [BoardSquare; 4]; 2]) = (
             [
                 (BoardMove::CASTLE_WK, WHITE, [BoardSquare::from("e1"), BoardSquare::from("f1"), BoardSquare::from("g1")]),
                 (BoardMove::CASTLE_BK, BLACK, [BoardSquare::from("e8"), BoardSquare::from("f8"), BoardSquare::from("g8")]),
@@ -593,7 +597,7 @@ impl Board {
             ]
         );
         'kingside_castle_check: for (castle_move, color, castle_squares) in CASTLING_INFO.0 {
-            if self.castle_availibility()[color as usize][0] == 1 {
+            if self.castle_availibility()[color as usize][0] {
                 for castle_square in castle_squares {
                     if square_control[castle_square.pos() as usize][(color ^ 1) as usize] != 0 {
                         // enemy attacks are on square
@@ -711,7 +715,7 @@ impl std::hash::Hash for Board {
         let [l, r] = self.0.0;
         let (ul, ll) = ((l >> 32u128) as u64, l as u64);
         let (ur, lr) = ((r >> 32u128) as u64, r as u64);
-        hasher.write_u64(ul ^ lr ^ ll ^ ur ^ self.1);
+        hasher.write_u64(ul ^ lr ^ ll ^ ur ^ (self.1 as u64 + self.1 as u64 << 32u64));
     }
 }
 impl nohash_hasher::IsEnabled for Board {}
