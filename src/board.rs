@@ -599,7 +599,7 @@ impl Board {
         for castle_board_side in CASTLING_INFO {
             'castle_check: for (castle_move, color, castle_squares) in castle_board_side {
                 if self.castle_availibility()[color as usize][0] {
-                    for castle_square in castle_squares {
+                    for castle_square in castle_squares.into_iter() {
                         if square_control[castle_square.pos() as usize].visibility[(color ^ 1) as usize] != 0 {
                             // enemy attacks are on square
                             continue 'castle_check;
