@@ -37,7 +37,7 @@ impl Direction {
     pub const COMPASS_ROSE: [Direction; 8] = [Direction::N, Direction::NE, Direction::E, Direction::SE, Direction::S, Direction::SW, Direction::W, Direction::NW];
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Clone)]
 pub struct BoardSquare(pub u8);
 impl BoardSquare {
     pub const fn pos(&self) -> u8 {
