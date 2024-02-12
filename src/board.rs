@@ -397,7 +397,7 @@ impl Board {
         let mut square_control: [BoardSquareInfo; 64] = [BOARD_SQUARE_INFO_DEFAULT; 64];
 
         let mut pinned_pieces: [IntMap<u8, Direction>; 2] = [IntMap::default(), IntMap::default()];
-        let mut checking_pieces: [Vec<BoardSquare>; 2] = [Vec::new(), Vec::new()];
+        let mut checking_squares: [Vec<BoardSquare>; 2] = [Vec::new(), Vec::new()];
 
         for king_color in [BLACK, WHITE] {
             if let Some(square_of_king) = &board_pieces.kings[king_color as usize] {
@@ -429,7 +429,7 @@ impl Board {
                                     } else {
                                         if piece_in_dir_type == pinner_piece_type || piece_in_dir_type == QUEEN {
                                             // enemy piece is checking
-                                            checking_pieces[king_color as usize].push(square_in_dir);
+                                            checking_squares[king_color as usize].push(square_in_dir);
                                         }
                                         break 'pin_direction_scan;
                                     }
@@ -539,7 +539,7 @@ impl Board {
                                 let piece_color = get_piece_color(reachable_piece);
                                 if piece_color != origin_piece_color {
                                     if get_piece_type(reachable_piece) == KING && origin_piece_type == KNIGHT {
-                                        checking_pieces[piece_color as usize].push(origin_square); 
+                                        checking_squares[piece_color as usize].push(origin_square.clone()); 
                                     }
                                     valid_moves[origin_piece_color as usize].push(BoardMove::new(&origin_square, &reachable_square));
                                 }
@@ -585,8 +585,8 @@ impl Board {
                 _ => {}
             }
         }
-        // castling
-        const CASTLING_INFO: [[(BoardMove, u8, Box<[BoardSquare]>); 2]; 2] = [
+        // castling, this should be constant
+        let castling_info: [[(BoardMove, u8, Box<[BoardSquare]>); 2]; 2] = [
             [
                 (BoardMove::CASTLE_WK, WHITE, Box::new([BoardSquare::from("e1"), BoardSquare::from("f1"), BoardSquare::from("g1")])),
                 (BoardMove::CASTLE_BK, BLACK, Box::new([BoardSquare::from("e8"), BoardSquare::from("f8"), BoardSquare::from("g8")])),
@@ -596,7 +596,7 @@ impl Board {
                 (BoardMove::CASTLE_BQ, BLACK, Box::new([BoardSquare::from("b8"), BoardSquare::from("c8"), BoardSquare::from("d8"), BoardSquare::from("e8")])),
             ]
         ];
-        for castle_board_side in CASTLING_INFO {
+        for castle_board_side in castling_info {
             'castle_check: for (castle_move, color, castle_squares) in castle_board_side {
                 if self.castle_availibility()[color as usize][0] {
                     for castle_square in castle_squares.into_iter() {
