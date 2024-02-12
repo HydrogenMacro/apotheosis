@@ -586,14 +586,14 @@ impl Board {
             }
         }
         // castling
-        const CASTLING_INFO: [[(BoardMove, u8, [BoardSquare; 3]); 2]; 2] = [
+        const CASTLING_INFO: [[(BoardMove, u8, Box<[BoardSquare]>); 2]; 2] = [
             [
-                (BoardMove::CASTLE_WK, WHITE, Box::new([BoardSquare::from("e1"), BoardSquare::from("f1"), BoardSquare::from("g1")][..])),
-                (BoardMove::CASTLE_BK, BLACK, Box::new([BoardSquare::from("e8"), BoardSquare::from("f8"), BoardSquare::from("g8")][..])),
+                (BoardMove::CASTLE_WK, WHITE, Box::new([BoardSquare::from("e1"), BoardSquare::from("f1"), BoardSquare::from("g1")])),
+                (BoardMove::CASTLE_BK, BLACK, Box::new([BoardSquare::from("e8"), BoardSquare::from("f8"), BoardSquare::from("g8")])),
             ],
             [
-                (BoardMove::CASTLE_WQ, WHITE, Box::new([BoardSquare::from("b1"), BoardSquare::from("c1"), BoardSquare::from("d1"), BoardSquare::from("e1")][..])),
-                (BoardMove::CASTLE_BQ, BLACK, Box::new([BoardSquare::from("b8"), BoardSquare::from("c8"), BoardSquare::from("d8"), BoardSquare::from("e8")][..])),
+                (BoardMove::CASTLE_WQ, WHITE, Box::new([BoardSquare::from("b1"), BoardSquare::from("c1"), BoardSquare::from("d1"), BoardSquare::from("e1")])),
+                (BoardMove::CASTLE_BQ, BLACK, Box::new([BoardSquare::from("b8"), BoardSquare::from("c8"), BoardSquare::from("d8"), BoardSquare::from("e8")])),
             ]
         ];
         for castle_board_side in CASTLING_INFO {
@@ -717,7 +717,7 @@ impl std::hash::Hash for Board {
         let [l, r] = self.0.0;
         let (ul, ll) = ((l >> 32u128) as u64, l as u64);
         let (ur, lr) = ((r >> 32u128) as u64, r as u64);
-        hasher.write_u64(ul ^ lr ^ ll ^ ur ^ (self.1 as u64 + self.1 as u64 << 32u64));
+        hasher.write_u64(ul ^ lr ^ ll ^ ur ^ (self.1 as u64 + (self.1 as u64) << 32u64));
     }
 }
 impl nohash_hasher::IsEnabled for Board {}
