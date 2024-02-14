@@ -91,8 +91,8 @@ fn boardmove(s1: &str, s2: &str) -> BoardMove {
 }
 
 fn assert_consists_of_same_moves(v1: Vec<BoardMove>, v2: Vec<BoardMove>) {
-    let s1: HashSet<_> = v1.iter().collect();
-    let s2: HashSet<_> = v2.iter().collect();
-    let sdiff: Vec<_> = s1.symmetric_difference(&s2).collect();
+    let s1: HashSet<BoardMove> = v1.iter().collect();
+    let s2: HashSet<BoardMove> = v2.iter().collect();
+    let sdiff: Vec<BoardMove> = s1.symmetric_difference(&s2).collect();
     assert_eq!(sdiff, vec![], "difference: {:?}", sdiff);
 }
