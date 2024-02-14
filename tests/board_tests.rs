@@ -69,9 +69,9 @@ fn board_move_test() {
 
     for (test_fen, test_moves_raw) in valid_move_tests {
         let found_moves = Board::from_fen(test_fen).get_board_info().valid_moves;
-        let test_moves: Vec<BoardMove> = test_moves_raw.iter().map(|[s1, s2]| boardmove(s1, s2)).collect();
         for color in [BLACK, WHITE] {
-            assert_consists_of_same_moves(found_moves[color as usize], test_moves[color as usize]);
+            let test_moves: Vec<BoardMove> = test_moves_raw[color as usize].iter().map(|[s1, s2]| boardmove(s1, s2)).collect();
+            assert_consists_of_same_moves(found_moves[color as usize], test_moves);
         }
     }
 }
