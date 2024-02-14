@@ -526,7 +526,7 @@ impl Board {
                         KING => Direction::COMPASS_ROSE,
                         _ => unreachable!()
                     };
-                    for move_direction in move_directions.into_iter() {
+                    for move_direction in move_directions {
                         let possible_reachable_square = origin_square.get_square_in_direction(
                             move_direction
                         );
@@ -672,7 +672,7 @@ impl Board {
             }
         }
         // toggle active color 
-        new_board.1 ^ (1u32 << 31);
+        new_board.1 ^= (1u32 << 31);
 
         return new_board;
     }
