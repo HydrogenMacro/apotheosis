@@ -14,7 +14,7 @@ use std::{
 fn board_move_test() {
     let valid_move_tests = [
         // pins and en passant
-        ("8/3p1p2/p2P1P2/Pp2BP1p/RP3PpP/2n2pP1/r4P2/k1K5 b - h3 0 1", (
+        ("8/3p1p2/p2P1P2/Pp2BP1p/RP3PpP/2n2pP1/r4P2/k1K5 b - h3 0 1", [
                 vec![
                     ["^g4", "h3"],
                     ["a2", "a3"],
@@ -28,7 +28,7 @@ fn board_move_test() {
                     ["e5", "d4"],
                     ["e5", "c3"],
                 ]
-            )
+            ]
         ),
         // castling
         ("r3k2r/Rp5p/pP5P/P7/1p6/pPp2p1p/PrP2P1P/R3K2R w KQq - 0 1", [
@@ -84,7 +84,7 @@ fn boardmove(s1: &str, s2: &str) -> BoardMove {
             "wq" => BoardMove::CASTLE_WQ,
             _ => unreachable!()
         },
-        '^' => BoardMove::new_as_en_passant(&BoardSquare::from(s1[1..]), &BoardSquare::from(s2)),
+        '^' => BoardMove::new_as_en_passant(&BoardSquare::from(&s1[1..]), &BoardSquare::from(s2)),
         _ => BoardMove::new(&BoardSquare::from(s1), &BoardSquare::from(s2))
     }
 }

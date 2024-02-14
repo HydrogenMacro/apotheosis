@@ -11,7 +11,7 @@ use std::{
 use ethnum::*;
 use nohash_hasher::*;
 
-#[derive(PartialEq, Eq, Clone, PartialOrd, Ord, Debug)]
+#[derive(PartialEq, Eq, Clone, PartialOrd, Ord, Debug, Hash)]
 pub struct Direction(i8, i8);
 impl Direction {
     pub const fn dx(&self) -> i8 {
@@ -37,7 +37,7 @@ impl Direction {
     pub const COMPASS_ROSE: [Direction; 8] = [Direction::N, Direction::NE, Direction::E, Direction::SE, Direction::S, Direction::SW, Direction::W, Direction::NW];
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Clone)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Clone, Hash)]
 pub struct BoardSquare(pub u8);
 impl BoardSquare {
     pub const fn pos(&self) -> u8 {
