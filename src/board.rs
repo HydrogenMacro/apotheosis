@@ -528,7 +528,7 @@ impl Board {
                     };
                     for move_direction in move_directions {
                         let possible_reachable_square = origin_square.get_square_in_direction(
-                            move_direction
+                            &move_direction
                         );
                         if let Some(reachable_square) = possible_reachable_square {
                             square_control[reachable_square.pos() as usize].visibility[origin_piece_color as usize] += 1;
