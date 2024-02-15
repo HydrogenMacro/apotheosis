@@ -68,6 +68,7 @@ fn board_move_test() {
     ];
 
     for (test_fen, test_moves_raw) in valid_move_tests {
+        println!("TESTING {}", test_fen);
         let found_moves = Board::from_fen(test_fen).get_board_info().valid_moves;
         for color in [BLACK, WHITE] {
             let test_moves: Vec<BoardMove> = test_moves_raw[color as usize].iter().map(|[s1, s2]| boardmove(s1, s2)).collect();
