@@ -97,5 +97,5 @@ fn assert_consists_of_same_moves(v1: Vec<BoardMove>, v2: Vec<BoardMove>) {
     for diff in sdiff.iter() {
         println!("difference: {}", diff);
     }
-    assert_eq!(sdiff, vec![]);
+    assert_eq!(sdiff, [] as [&BoardMove; 0]);
 }
