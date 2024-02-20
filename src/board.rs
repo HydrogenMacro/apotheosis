@@ -440,6 +440,7 @@ impl Board {
                 }
             }
         }
+        println!("{:?}", pinned_pieces);
         for origin_square_pos in 0..64 {
             let origin_square = BoardSquare(origin_square_pos);
             let possible_origin_piece = self.get_piece_at(&origin_square);
